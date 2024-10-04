@@ -4,7 +4,7 @@ Drop table IF EXISTS user;
 
 -- Table des utilisateurs
 CREATE TABLE user (
-id INT AUTO_INCREMENT PRIMARY KEY,
+id INT AUgitTO_INCREMENT PRIMARY KEY,
 username VARCHAR(255) NOT NULL,
 email VARCHAR(255) NOT NULL UNIQUE,
 password VARCHAR(255) NOT NULL
