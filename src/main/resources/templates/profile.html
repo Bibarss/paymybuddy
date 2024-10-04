@@ -1,0 +1,26 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Profil</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+<header>
+    <nav>
+        <a href="#" class="logo">Pay My Buddy</a>
+        <a th:href="@{/profile}" class="active">Profil</a>
+        <a th:href="@{/transfer}">Transférer</a>
+        <a th:href="@{/connections/add}">Ajouter relation</a>
+        <a th:href="@{/logout}">Se déconnecter</a>
+    </nav>
+</header>
+
+<main>
+    <h2>Profile</h2>
+    <p>Username: <span th:text="${user.username}">@username</span></p>
+    <p>Mail: <span th:text="${user.email}">nom@domain.com</span></p>
+    <button>Modifier</button>
+</main>
+</body>
+</html>
