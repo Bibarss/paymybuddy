@@ -1,0 +1,157 @@
+/* Police globale et marges */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100%;
+            font-family: 'Arial', sans-serif;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Partie navigation */
+        header {
+            display: flex;
+            justify-content: flex-start;
+            align-items: center;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        header div {
+            font-weight: bold;
+            font-size: 24px;
+        }
+
+        nav {
+            margin-left: auto;
+        }
+
+        nav a {
+            margin: 0 15px;
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+        }
+
+        /* Style pour le lien actif */
+        nav a.active {
+            color: #007bff; /* Bleu pour indiquer la section active */
+        }
+
+        nav a:hover {
+            color: #007bff;
+        }
+
+        /* Partie principale */
+        main {
+            flex: 1;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        /* Sections cachées par défaut */
+        .section {
+            display: none;
+            width: 100%;
+            max-width: 800px;
+        }
+
+        /* Centrer les contenus */
+        .center-content {
+            text-align: left;
+        }
+
+        /* Section Profil */
+        #profileSection .profile-content {
+            display: grid;
+            grid-template-columns: 1fr 2fr;
+            gap: 10px;
+            align-items: left;
+        }
+
+        #profileSection button {
+            grid-column: 2;
+            justify-self: start; /* Décale le bouton à gauche */
+            background-color: #FFA500;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+            margin-top: 20px;
+        }
+
+        /* Style du formulaire de transfert */
+        .transfer-top, .transfer-bottom {
+            margin-bottom: 20px;
+        }
+
+        .transfer-form {
+            display: flex;
+            justify-content: space-between;
+            gap: 20px;
+        }
+
+        .transfer-form input, .transfer-form select {
+            padding: 10px;
+            width: 100%;
+            max-width: 200px;
+            box-sizing: border-box;
+            font-size: 16px;
+        }
+
+        /* Bouton Payer */
+        .transfer-form button {
+            background-color: #007bff;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            border: none;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* Style du tableau des transactions */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        table, th, td {
+            border: 1px solid #ddd;
+        }
+
+        th, td {
+            padding: 10px;
+            text-align: left;
+        }
+
+        /* Style du formulaire d'ajout de relation */
+        #addConnectionSection form {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        #addConnectionSection input {
+            padding: 10px;
+            font-size: 16px;
+            margin-right: 10px;
+            width: 250px;
+            box-sizing: border-box;
+        }
+
+        #addConnectionSection button {
+            background-color: #FFA500;
+            border: none;
+            color: white;
+            padding: 10px 20px;
+            font-size: 16px;
+            cursor: pointer;
+            border-radius: 5px;
+        }
