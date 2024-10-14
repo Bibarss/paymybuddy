@@ -1,6 +1,6 @@
 package com.paymybuddy.config;
 
-import com.paymybuddy.service.UserService;
+import com.paymybuddy.service.UsersService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
@@ -53,7 +53,7 @@ public class SecurityConfig {
                     logger.info("Configuration de la page de connexion");
                     form
                             .loginPage("/login")
-                            .defaultSuccessUrl("/home", true)
+                            .defaultSuccessUrl("/transfer", true)
                             .permitAll();
                 })
                 .logout(logout -> {
@@ -90,7 +90,7 @@ public class SecurityConfig {
      * @return Un UserDetailsService basé sur le UserService fourni.
      */
     @Bean
-    public UserDetailsService userDetailsService(UserService userService) {
+    public UserDetailsService userDetailsService(UsersService userService) {
         logger.info("Création du bean UserDetailsService à partir de UserService");
         return userService;
     }

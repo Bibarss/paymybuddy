@@ -3,24 +3,50 @@
 <head>
     <meta charset="UTF-8">
     <title>Profil</title>
-    <link rel="stylesheet" th:href="@{/css/style.css}">
+    <link rel="stylesheet" th:href="@{/css/styleHome.css}">
+    <style>
+        /* Incluez ici vos styles CSS existants */
+    </style>
 </head>
 <body>
+<!-- Navigation -->
 <header>
+    <div>Pay My Buddy</div>
     <nav>
-        <a href="#" class="logo">Pay My Buddy</a>
-        <a th:href="@{/profile}" class="active">Profil</a>
         <a th:href="@{/transfer}">Transférer</a>
-        <a th:href="@{/connections/add}">Ajouter relation</a>
+        <a th:href="@{/profile}" class="active">Profil</a>
+        <a th:href="@{/addConnection}">Ajouter relation</a>
         <a th:href="@{/logout}">Se déconnecter</a>
     </nav>
 </header>
 
+
+<!-- Contenu principal -->
 <main>
-    <h2>Profile</h2>
-    <p>Username: <span th:text="${user.username}">@username</span></p>
-    <p>Mail: <span th:text="${user.email}">nom@domain.com</span></p>
-    <button>Modifier</button>
+    <div id="profileSection" class="center-content">
+        <form th:action="@{/profile/update}" method="post">
+            <div class="profile-content">
+                <p>Username:</p>
+                <span th:text="${users.username}">@username</span>
+
+                <p>Mail:</p>
+                <span th:text="${users.email}">nom@domain.com</span>
+
+                <p>Mot de passe:</p>
+                <span>mot de passe</span>
+
+                <button type="submit">Modifier</button>
+            </div>
+        </form>
+    </div>
+
+    <!-- Affichage des messages -->
+    <div th:if="${error}" class="error">
+        <p th:text="${error}"></p>
+    </div>
+    <div th:if="${success}" class="success">
+        <p th:text="${success}"></p>
+    </div>
 </main>
 </body>
 </html>

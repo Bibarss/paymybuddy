@@ -2,9 +2,9 @@ package com.paymybuddy.service;
 
 import com.paymybuddy.repository.TransactionRepository;
 import com.paymybuddy.model.Transaction;
-import com.paymybuddy.model.User;
+import com.paymybuddy.model.Users;
 
-import com.paymybuddy.repository.UserRepository;
+import com.paymybuddy.repository.UsersRepository;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -25,9 +25,9 @@ public class TransactionService {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private UserRepository userRepository;
+    private UsersRepository usersRepository;
 
-    private static final Logger logger = LogManager.getLogger(UserRepository.class);
+    private static final Logger logger = LogManager.getLogger(UsersRepository.class);
 
     /**
      * Effectue un transfert d'argent entre deux utilisateurs.
@@ -40,7 +40,7 @@ public class TransactionService {
      * @throws Exception Si le solde du sender est insuffisant.
      */
     @Transactional
-    public Transaction sendMoney(User sender, User receiver, Double amount, String description) throws Exception {
+    public Transaction sendMoney(Users sender, Users receiver, Double amount, String description) throws Exception {
 
         logger.info("Tentative de transfert d'argent de {} à {} : montant = {}", sender.getEmail(), receiver.getEmail(), amount);
 
@@ -64,8 +64,8 @@ public class TransactionService {
             transaction.setDescription(description);
 
             // Enregistrer les modifications
-            userRepository.save(sender);
-            userRepository.save(receiver);
+            usersRepository.save(sender);
+            usersRepository.save(receiver);
             return transactionRepository.save(transaction);
         } else {
             logger.error("Solde insuffisant pour l'utilisateur: {}", sender.getEmail());
@@ -79,13 +79,13 @@ public class TransactionService {
      * @param user L'utilisateur pour lequel récupérer les transactions.
      * @return La liste des transactions de l'utilisateur.
      */
-    public List<Transaction> findTransactionsForUser(User user) {
+    public List<Transaction> findTransactionsForUser(Users user) {
 
         logger.info("Tentative de récupération des transactions de {}", user.getEmail());
 
         List<Transaction> sent = transactionRepository.findBySender(user);
         List<Transaction> received = transactionRepository.findByReceiver(user);
-        sent.addAll(received);
+        //sent.addAll(received);
         sent.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate())); // Tri par date décroissante
         return sent;
     }

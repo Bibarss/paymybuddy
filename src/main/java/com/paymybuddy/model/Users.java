@@ -9,14 +9,14 @@ import java.util.*;
  */
 @Data
 @Entity
-@Table(name = "User")
-public class User {
+@Table(name = "users")
+public class Users {
 
     /**
      * L'ID unique de l'utilisateur, généré automatiquement.
      */
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
     /**
@@ -47,12 +47,14 @@ public class User {
      * Liste des transactions envoyées par l'utilisateur.
      */
     @OneToMany(mappedBy = "sender", cascade = CascadeType.ALL)
+    //@OneToMany(fetch = FetchType.EAGER, mappedBy = "sender", cascade = CascadeType.ALL)
     private List<Transaction> sentTransactions = new ArrayList<>();
 
     /**
      * Liste des transactions reçues par l'utilisateur.
      */
     @OneToMany(mappedBy = "receiver", cascade = CascadeType.ALL)
+    //@OneToMany(fetch = FetchType.EAGER, mappedBy = "receiver", cascade = CascadeType.ALL)
     private List<Transaction> receivedTransactions = new ArrayList<>();
 
     /**
@@ -65,32 +67,6 @@ public class User {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "connection_id")
     )
-    private List<User> connections = new ArrayList<>();
+    private List<Users> connections = new ArrayList<>();
 
-    /**
-     * Vérifie l'égalité entre deux objets User.
-     * La comparaison est basée sur l'ID unique de l'utilisateur.
-     *
-     * @param o L'objet à comparer.
-     * @return true si les deux objets sont égaux, sinon false.
-     */
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (o == null || getClass() != o.getClass()) return false;
-
-        User user = (User) o;
-
-        return Objects.equals(id, user.id);
-    }
-
-    /**
-     * Génère le hash code basé sur l'ID de l'utilisateur.
-     *
-     * @return Le hash code de l'utilisateur.
-     */
-    @Override
-    public int hashCode() {
-        return Objects.hash(id);
-    }
 }

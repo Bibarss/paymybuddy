@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Ajouter une relation</title>
+    <link rel="stylesheet" th:href="@{/css/styleHome.css}">
+    <style>
+        /* Incluez ici vos styles CSS existants */
+    </style>
+</head>
+<body>
+<!-- Navigation -->
+<header>
+    <div>Pay My Buddy</div>
+    <nav>
+        <a th:href="@{/transfer}">Transférer</a>
+        <a th:href="@{/profile}">Profil</a>
+        <a th:href="@{/addConnection}" class="active">Ajouter relation</a>
+        <a th:href="@{/logout}">Se déconnecter</a>
+    </nav>
+</header>
+
+
+<!-- Contenu principal -->
+<main>
+    <div id="addConnectionSection" class="center-content">
+        <h5>Chercher une relation</h5>
+        <form th:action="@{/connections/add}" method="post">
+            <input type="email" name="email" placeholder="Saisir une adresse mail" required>
+            <button type="submit">Ajouter</button>
+        </form>
+
+        <!-- Affichage des messages -->
+        <div th:if="${error}" class="error">
+            <p th:text="${error}"></p>
+        </div>
+        <div th:if="${success}" class="success">
+            <p th:text="${success}"></p>
+        </div>
+
+        <!-- Liste des connexions -->
+        <h5>Vos relations</h5>
+        <ul>
+            <li th:each="connection : ${users.connections}" th:text="${connection.username}"></li>
+        </ul>
+    </div>
+</main>
+</body>
+</html>
