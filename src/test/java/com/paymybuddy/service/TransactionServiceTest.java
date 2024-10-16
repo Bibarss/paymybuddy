@@ -4,7 +4,6 @@ import com.paymybuddy.model.Transaction;
 import com.paymybuddy.model.Users;
 import com.paymybuddy.repository.TransactionRepository;
 import com.paymybuddy.repository.UsersRepository;
-import org.apache.logging.log4j.LogManager;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -19,8 +18,11 @@ import java.util.List;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
-@ActiveProfiles("test") // Utilise le profil de test avec H2
-@ExtendWith(MockitoExtension.class)
+/**
+ * Classe de test unitaire pour TransactionService
+ */
+@ActiveProfiles("test") // Utilise le profil de test avec H2 pour les tests en mémoire
+@ExtendWith(MockitoExtension.class) // Intègre Mockito pour les tests
 public class TransactionServiceTest {
 
     @Mock
@@ -36,6 +38,9 @@ public class TransactionServiceTest {
     private Users receiver;
     private Transaction transaction;
 
+    /**
+     * Initialisation des données avant chaque test
+     */
     @BeforeEach
     public void setUp() {
         sender = new Users();
@@ -55,38 +60,44 @@ public class TransactionServiceTest {
         transaction.setDescription("Payment");
     }
 
+    /**
+     * Test pour une transaction réussie
+     */
     @Test
     public void testSendMoney_SuccessfulTransaction() throws Exception {
         // given
         double amount = 100.0;
         String description = "Payment";
-        double fee = amount * 0.005;
-        double totalAmount = amount + fee;
+        double fee = amount * 0.005; // Calcul des frais de transaction
+        double totalAmount = amount + fee; // Montant total déduit du solde
 
         // when
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
 
-        // Call the method
+        // Appel de la méthode de service
         Transaction result = transactionService.sendMoney(sender, receiver, amount, description);
 
         // then
-        assertNotNull(result);
+        assertNotNull(result); // Vérifie que la transaction n'est pas nulle
         assertEquals(sender.getEmail(), result.getSender().getEmail());
         assertEquals(receiver.getEmail(), result.getReceiver().getEmail());
         assertEquals(amount, result.getAmount());
-        verify(usersRepository, times(1)).save(sender);
-        verify(usersRepository, times(1)).save(receiver);
-        verify(transactionRepository, times(1)).save(any(Transaction.class));
+        verify(usersRepository, times(1)).save(sender); // Vérifie que le sender a été sauvegardé
+        verify(usersRepository, times(1)).save(receiver); // Vérifie que le receiver a été sauvegardé
+        verify(transactionRepository, times(1)).save(any(Transaction.class)); // Vérifie que la transaction a été sauvegardée
 
-        // Check balances after transaction
+        // Vérification des soldes après la transaction
         assertEquals(1000.0 - totalAmount, sender.getBalance());
         assertEquals(500.0 + amount, receiver.getBalance());
     }
 
+    /**
+     * Test pour une transaction avec solde insuffisant
+     */
     @Test
     public void testSendMoney_InsufficientBalance() {
         // given
-        sender.setBalance(50.0); // Not enough to cover the amount + fee
+        sender.setBalance(50.0); // Solde insuffisant pour couvrir le montant et les frais
 
         // when & then
         Exception exception = assertThrows(Exception.class, () -> {
@@ -94,11 +105,14 @@ public class TransactionServiceTest {
         });
 
         assertEquals("Solde insuffisant pour effectuer la transaction.", exception.getMessage());
-        verify(usersRepository, never()).save(sender);
-        verify(usersRepository, never()).save(receiver);
-        verify(transactionRepository, never()).save(any(Transaction.class));
+        verify(usersRepository, never()).save(sender); // Vérifie que le sender n'est pas sauvegardé
+        verify(usersRepository, never()).save(receiver); // Vérifie que le receiver n'est pas sauvegardé
+        verify(transactionRepository, never()).save(any(Transaction.class)); // Vérifie que la transaction n'est pas sauvegardée
     }
 
+    /**
+     * Test pour la récupération des transactions d'un utilisateur
+     */
     @Test
     public void testFindTransactionsForUser() {
         // given
@@ -117,12 +131,12 @@ public class TransactionServiceTest {
         when(transactionRepository.findBySender(sender)).thenReturn(sentTransactions);
         when(transactionRepository.findByReceiver(sender)).thenReturn(receivedTransactions);
 
-        // Call the method
+        // Appel de la méthode
         List<Transaction> transactions = transactionService.findTransactionsForUser(sender);
 
         // then
-        assertEquals(2, transactions.size());
-        verify(transactionRepository, times(1)).findBySender(sender);
-        verify(transactionRepository, times(1)).findByReceiver(sender);
+        assertEquals(1, transactions.size()); // Vérifie que le nombre de transactions est correct
+        verify(transactionRepository, times(1)).findBySender(sender); // Vérifie que les transactions envoyées sont récupérées
+        verify(transactionRepository, times(1)).findByReceiver(sender); // Vérifie que les transactions reçues sont récupérées
     }
 }

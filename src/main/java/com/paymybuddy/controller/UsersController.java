@@ -73,25 +73,6 @@ public class UsersController {
         return "login";
     }
 
-    /**
-     * Affiche la page d'accueil.
-     *
-     * @param currentUser L'utilisateur actuellement connecté.
-     * @param model       Le modèle pour la vue.
-     * @return La page d'accueil.
-     */
-    @GetMapping("/home")
-    public String showHomePage(@AuthenticationPrincipal UserDetails currentUser, Model model) {
-        logger.info("Affichage de la page d'accueil pour l'utilisateur: {}", currentUser.getUsername());
-        Users user = usersService.findByEmail(currentUser.getUsername()).orElse(null);
-        List<Transaction> transactions = transactionService.findTransactionsForUser(user);
-        model.addAttribute("user", user);
-        model.addAttribute("transactions", transactions);
-        return "home";
-    }
-
-
-
     // L'ajout pour separer la page home
     // Afficher la page de transfert
     //-------------------------------------------------------------------------------------------------------
