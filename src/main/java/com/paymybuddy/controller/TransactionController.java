@@ -61,6 +61,7 @@ public class TransactionController {
      * @param connectionEmail L'e-mail de la connexion à laquelle envoyer de l'argent.
      * @param amount         Le montant à envoyer.
      * @param description    La description de la transaction.
+     * @param model          Le modèle pour la vue.
      * @return Redirige vers la page d'accueil.
      */
     @PostMapping("/transactions/send")
@@ -68,7 +69,7 @@ public class TransactionController {
                             @RequestParam("connectionEmail") String connectionEmail,
                             @RequestParam("amount") Double amount,
                             @RequestParam("description") String description,
-                            RedirectAttributes redirectAttributes) {
+                            Model model) {
 
         logger.info("Envoi d'argent de {} à {}", principal.getName(), connectionEmail);
 
@@ -79,16 +80,21 @@ public class TransactionController {
             try {
                 transactionService.sendMoney(sender, receiver, amount, description);
                 logger.info("Transaction réussie de {} à {}", sender.getEmail(), receiver.getEmail());
-                redirectAttributes.addFlashAttribute("success", "Transaction effectuée avec succès.");
+                model.addAttribute("success", "Relation ajoutée avec succès.");
             } catch (Exception e) {
                 logger.error("Erreur lors de la transaction: {}", e.getMessage());
-                redirectAttributes.addFlashAttribute("error", e.getMessage());
+                model.addAttribute("error","Erreur lors de la transaction");
             }
         } else {
             logger.warn("Transaction non autorisée entre {} et {}", principal.getName(), connectionEmail);
-            redirectAttributes.addFlashAttribute("error", "Transaction non autorisée.");
+            model.addAttribute("error", "Transaction non autorisée.");
+
         }
-        return "redirect:/transfer";
+
+        List<Transaction> transactions = transactionService.findTransactionsForUser(sender);
+        model.addAttribute("user", sender);
+        model.addAttribute("transactions", transactions);
+        return "transfer";
     }
 
 }

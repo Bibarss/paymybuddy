@@ -62,9 +62,9 @@ public class TransactionControllerTests {
                         .param("amount", "100")
                         .param("description", "Payment for service")
                         .principal(() -> "user1@example.com")) // Simule l'utilisateur connecté
-                .andExpect(status().is3xxRedirection()) // Redirection attendue après succès
-                .andExpect(redirectedUrl("/transfer")) // Vérifie que la redirection mène bien à /transfer
-                .andExpect(flash().attributeExists("success")); // Vérifie que le message de succès est dans les attributs flash
+                .andExpect(status().isOk()) // Vérifie un succès 200
+                .andExpect(view().name("transfer")) // Vérifie que la vue "addConnection" est renvoyée
+                .andExpect(model().attributeExists("success")); // Vérifie que le message de succès est dans les attributs model
     }
 
     /**
@@ -118,8 +118,9 @@ public class TransactionControllerTests {
                         .param("amount", "100.0")
                         .param("description", "Test d'exception")
                         .principal(() -> "user6@example.com")) // Simule l'utilisateur connecté
-                .andExpect(status().is3xxRedirection()) // Redirection attendue après erreur
-                .andExpect(redirectedUrl("/transfer")) // Vérifie que la redirection mène à /transfer
-                .andExpect(flash().attributeExists("error")); // Vérifie que l'erreur est dans les attributs flash
+                .andExpect(status().isOk()) // Vérifie un succès 200
+                .andExpect(view().name("transfer")) // Vérifie que la vue "addConnection" est renvoyée
+                .andExpect(model().attributeExists("error")) // Vérifie que l'attribut "error" existe
+                .andExpect(model().attribute("error", "Erreur lors de la transaction"));
     }
 }
