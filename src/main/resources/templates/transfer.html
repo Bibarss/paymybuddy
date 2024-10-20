@@ -21,6 +21,19 @@
 </header>
 
 
+<!-- Affichage du solde -->
+<div class="balance">
+    <p>Solde : <span th:text="${user.balance} + ' €'">0 €</span></p>
+</div>
+
+<!-- Affichage des messages -->
+<div th:if="${error}" class="error">
+    <p th:text="${error}"></p>
+</div>
+<div th:if="${success}" class="success">
+    <p th:text="${success}"></p>
+</div>
+
 <!-- Contenu principal -->
 <main>
     <!-- Formulaire de transfert -->
@@ -30,23 +43,15 @@
             <form th:action="@{/transactions/send}" method="post" class="transfer-form">
                 <select name="connectionEmail" required>
                     <option value="" disabled selected>Sélectionner une relation</option>
-                    <option th:each="connection : ${users.connections}"
+                    <option th:each="connection : ${user.connections}"
                             th:value="${connection.email}"
                             th:text="${connection.username}">
                     </option>
                 </select>
                 <input type="text" name="description" placeholder="Description">
-                <input type="number" name="amount" min="0.01" step="0.01" placeholder="0 €" required>
+                <input type="number" name="amount" min="0" step="1" placeholder="0 €" required>
                 <button type="submit">Payer</button>
             </form>
-        </div>
-
-        <!-- Affichage des messages -->
-        <div th:if="${error}" class="error">
-            <p th:text="${error}"></p>
-        </div>
-        <div th:if="${success}" class="success">
-            <p th:text="${success}"></p>
         </div>
 
         <!-- Liste des transactions -->

@@ -1,7 +1,7 @@
 package com.paymybuddy.repository;
 
-import com.paymybuddy.model.Transaction;
-import com.paymybuddy.model.Users;
+import com.paymybuddy.entity.Transaction;
+import com.paymybuddy.entity.Users;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

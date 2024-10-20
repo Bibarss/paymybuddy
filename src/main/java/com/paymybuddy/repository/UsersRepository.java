@@ -1,15 +1,11 @@
 package com.paymybuddy.repository;
 
-import org.springframework.data.jpa.repository.EntityGraph;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
-
-import jakarta.transaction.Transactional;
 
 import java.util.List;
 import java.util.Optional;
-import com.paymybuddy.model.Users;
+import com.paymybuddy.entity.Users;
 
 /**
  * Interface UserRepository pour accéder aux données des utilisateurs dans la base de données.
@@ -52,4 +48,6 @@ public interface UsersRepository extends JpaRepository<Users, Long> {
     Optional<Users> findByEmailWithConnections(@Param("email") String email);
 
      */
+
+
 }

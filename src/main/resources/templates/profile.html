@@ -21,32 +21,33 @@
 </header>
 
 
+<!-- Affichage des messages -->
+<div th:if="${error}" class="error">
+    <p th:text="${error}"></p>
+</div>
+<div th:if="${success}" class="success">
+    <p th:text="${success}"></p>
+</div>
+
 <!-- Contenu principal -->
 <main>
     <div id="profileSection" class="center-content">
         <form th:action="@{/profile/update}" method="post">
             <div class="profile-content">
                 <p>Username:</p>
-                <span th:text="${users.username}">@username</span>
+                <span th:text="${user.username}">@username</span> <!-- Lecture seule -->
 
                 <p>Mail:</p>
-                <span th:text="${users.email}">nom@domain.com</span>
+                <span th:text="${user.email}">nom@domain.com</span> <!-- Lecture seule -->
 
                 <p>Mot de passe:</p>
-                <span>mot de passe</span>
-
+                <input type="password" name="newPassword" placeholder="mot de passe"/>
                 <button type="submit">Modifier</button>
             </div>
         </form>
     </div>
 
-    <!-- Affichage des messages -->
-    <div th:if="${error}" class="error">
-        <p th:text="${error}"></p>
-    </div>
-    <div th:if="${success}" class="success">
-        <p th:text="${success}"></p>
-    </div>
+
 </main>
 </body>
 </html>

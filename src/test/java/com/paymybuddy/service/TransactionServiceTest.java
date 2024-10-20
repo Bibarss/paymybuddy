@@ -1,7 +1,7 @@
 package com.paymybuddy.service;
 
-import com.paymybuddy.model.Transaction;
-import com.paymybuddy.model.Users;
+import com.paymybuddy.entity.Transaction;
+import com.paymybuddy.entity.Users;
 import com.paymybuddy.repository.TransactionRepository;
 import com.paymybuddy.repository.UsersRepository;
 import org.junit.jupiter.api.BeforeEach;
@@ -68,7 +68,7 @@ public class TransactionServiceTest {
         // given
         double amount = 100.0;
         String description = "Payment";
-        double fee = amount * 0.005; // Calcul des frais de transaction
+        double fee = amount * 0; // Calcul des frais de transaction
         double totalAmount = amount + fee; // Montant total déduit du solde
 
         // when

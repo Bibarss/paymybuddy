@@ -1,6 +1,6 @@
 package com.paymybuddy.service;
 
-import com.paymybuddy.model.Users;
+import com.paymybuddy.entity.Users;
 import com.paymybuddy.repository.UsersRepository;
 
 import org.springframework.security.core.userdetails.UserDetails;
@@ -9,7 +9,6 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -58,8 +57,6 @@ public class UsersService implements UserDetailsService {
                 .roles("USER") // Vous pouvez gérer les rôles si nécessaire
                 .build();
     }
-
-
 
     /**
      * Enregistre un nouvel utilisateur.
@@ -134,37 +131,6 @@ public class UsersService implements UserDetailsService {
         logger.info("Mot de passe mis à jour avec succès.");
     }
 
-    /**
-     * Recharge le compte de l'utilisateur.
-     *
-     * @param user   L'utilisateur dont le compte doit être rechargé.
-     * @param amount Le montant à ajouter.
-     */
-    public void deposit(Users user, Double amount) {
-        logger.info("Rechargement du compte pour l'utilisateur: {} avec le montant: {}", user.getEmail(), amount);
-        user.setBalance(user.getBalance() + amount);
-        updateUser(user);
-        logger.info("Rechargement réussi. Nouveau solde: {}", user.getBalance());
-    }
-
-    /**
-     * Retire de l'argent du compte de l'utilisateur.
-     *
-     * @param user   L'utilisateur effectuant le retrait.
-     * @param amount Le montant à retirer.
-     * @throws Exception Si le solde est insuffisant pour effectuer le retrait.
-     */
-    public void withdraw(Users user, Double amount) throws Exception {
-        logger.info("Tentative de retrait pour l'utilisateur: {} d'un montant de: {}", user.getEmail(), amount);
-        if (user.getBalance() >= amount) {
-            user.setBalance(user.getBalance() - amount);
-            updateUser(user);
-            logger.info("Retrait réussi. Nouveau solde: {}", user.getBalance());
-        } else {
-            logger.error("Échec du retrait. Solde insuffisant pour l'utilisateur: {}", user.getEmail());
-            throw new Exception("Solde insuffisant pour effectuer le retrait.");
-        }
-    }
 
     /**
      * Vérifie si un utilisateur est une connexion.
@@ -178,16 +144,5 @@ public class UsersService implements UserDetailsService {
         return user.getConnections().contains(connection);
     }
 
-    /**
-     * Recherche un utilisateur et ses connexions par son adresse e-mail.
-     *
-     * @param email  L'utilisateur à vérifier.
-     * @return utilisateur et ses connexions
-     */
-    /*
-    public Optional<Users> findByEmailWithConnections(String email) {
-        return usersRepository.findByEmailWithConnections(email);
-    }
-*/
 
 }

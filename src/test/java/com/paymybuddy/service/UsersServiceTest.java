@@ -1,6 +1,6 @@
 package com.paymybuddy.service;
 
-import com.paymybuddy.model.Users;
+import com.paymybuddy.entity.Users;
 import com.paymybuddy.repository.UsersRepository;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -188,43 +188,6 @@ public class UsersServiceTest {
         verify(usersRepository, times(1)).save(user); // Vérifie que l'utilisateur est sauvegardé avec le nouveau mot de passe
     }
 
-    /**
-     * Test pour déposer de l'argent sur le compte d'un utilisateur
-     */
-    @Test
-    public void testDeposit() {
-        user.setBalance(100.0);
-
-        usersService.deposit(user, 50.0);
-
-        assertEquals(150.0, user.getBalance()); // Vérifie que le solde est mis à jour
-        verify(usersRepository, times(1)).save(user); // Vérifie que l'utilisateur est sauvegardé avec le nouveau solde
-    }
-
-    /**
-     * Test pour retirer de l'argent (succès)
-     */
-    @Test
-    public void testWithdraw_Success() throws Exception {
-        user.setBalance(100.0);
-
-        usersService.withdraw(user, 50.0);
-
-        assertEquals(50.0, user.getBalance()); // Vérifie que le solde est mis à jour après le retrait
-        verify(usersRepository, times(1)).save(user); // Vérifie que l'utilisateur est sauvegardé
-    }
-
-    /**
-     * Test pour retirer de l'argent (échec : solde insuffisant)
-     */
-    @Test
-    public void testWithdraw_Failure() {
-        user.setBalance(30.0);
-
-        assertThrows(Exception.class, () -> usersService.withdraw(user, 50.0)); // Vérifie que l'exception est levée
-
-        verify(usersRepository, never()).save(user); // Vérifie que l'utilisateur n'est pas sauvegardé
-    }
 
     /**
      * Test pour vérifier si deux utilisateurs sont connectés

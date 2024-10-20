@@ -20,6 +20,13 @@
     </nav>
 </header>
 
+<!-- Affichage des messages -->
+<div th:if="${error}" class="error">
+    <p th:text="${error}"></p>
+</div>
+<div th:if="${success}" class="success">
+    <p th:text="${success}"></p>
+</div>
 
 <!-- Contenu principal -->
 <main>
@@ -30,18 +37,10 @@
             <button type="submit">Ajouter</button>
         </form>
 
-        <!-- Affichage des messages -->
-        <div th:if="${error}" class="error">
-            <p th:text="${error}"></p>
-        </div>
-        <div th:if="${success}" class="success">
-            <p th:text="${success}"></p>
-        </div>
-
         <!-- Liste des connexions -->
         <h5>Vos relations</h5>
         <ul>
-            <li th:each="connection : ${users.connections}" th:text="${connection.username}"></li>
+            <li th:each="connection : ${user.connections}" th:text="${connection.username}"></li>
         </ul>
     </div>
 </main>

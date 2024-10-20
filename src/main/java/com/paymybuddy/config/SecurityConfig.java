@@ -71,19 +71,6 @@ public class SecurityConfig {
     }
 
     /**
-     * Fournit un bean d'AuthenticationManager pour gérer l'authentification.
-     *
-     * @param authenticationConfiguration La configuration de l'authentification.
-     * @return Un AuthenticationManager configuré.
-     * @throws Exception En cas d'erreur de configuration.
-     */
-    @Bean
-    public AuthenticationManager authenticationManager(AuthenticationConfiguration authenticationConfiguration) throws Exception {
-        logger.info("Création du bean AuthenticationManager");
-        return authenticationConfiguration.getAuthenticationManager();
-    }
-
-    /**
      * Fournit un UserDetailsService à partir du UserService.
      *
      * @param userService Le service utilisateur à utiliser pour les détails d'authentification.

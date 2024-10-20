@@ -1,8 +1,8 @@
 package com.paymybuddy.service;
 
 import com.paymybuddy.repository.TransactionRepository;
-import com.paymybuddy.model.Transaction;
-import com.paymybuddy.model.Users;
+import com.paymybuddy.entity.Transaction;
+import com.paymybuddy.entity.Users;
 
 import com.paymybuddy.repository.UsersRepository;
 import jakarta.transaction.Transactional;
@@ -47,7 +47,7 @@ public class TransactionService {
         // Vérifier le solde, appliquer les frais, gérer les exceptions
 
         // Vérifier que le sender a suffisamment de fonds
-        double fee = amount * 0.005; // 0.5% de frais
+        double fee = amount * 0; // 0% de frais
         double totalAmount = amount + fee;
 
         if (sender.getBalance() >= totalAmount) {

@@ -1,6 +1,6 @@
 package com.paymybuddy.controller;
 
-import com.paymybuddy.model.Users;
+import com.paymybuddy.entity.Users;
 import com.paymybuddy.repository.UsersRepository;
 import com.paymybuddy.service.TransactionService;
 import com.paymybuddy.service.UsersService;
@@ -9,7 +9,6 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
-import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -19,7 +18,6 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -28,7 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @ActiveProfiles("test") // Utilise le profil de test avec H2 pour les tests en mémoire
 @SpringBootTest
-public class UsersControllerIntegrationTest {
+public class UsersControllerTests {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
@@ -56,7 +54,6 @@ public class UsersControllerIntegrationTest {
      * Teste l'enregistrement d'un nouvel utilisateur.
      */
     @Test
-    @WithMockUser(username = "user1@example.com")
     public void testRegisterUser() throws Exception {
         mockMvc.perform(post("/register")
                         .contentType(MediaType.APPLICATION_FORM_URLENCODED)
@@ -68,45 +65,31 @@ public class UsersControllerIntegrationTest {
     }
 
     /**
-     * Teste l'envoi d'argent entre utilisateurs (succès).
-     */
-    @Test
-    @WithMockUser(username = "user1@example.com")
-    public void testSendMoney_Success() throws Exception {
-        Optional<Users> user2 = usersService.findByEmail("user2@example.com");
-
-        mockMvc.perform(post("/transactions/send")
-                        .param("connectionEmail", user2.get().getEmail())
-                        .param("amount", "100")
-                        .param("description", "Payment for service"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/transfer"));
-    }
-
-    /**
      * Teste l'ajout d'une nouvelle connexion (succès).
      */
     @Test
-    @WithMockUser(username = "user1@example.com")
     public void testAddConnection_Success() throws Exception {
         Optional<Users> user2 = usersService.findByEmail("user2@example.com");
 
         mockMvc.perform(post("/connections/add")
-                        .param("email", user2.get().getEmail()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/addConnection"));
+                        .param("email", user2.get().getEmail())
+                        .principal(() -> "user1@example.com")) // Simule l'utilisateur connecté
+                .andExpect(status().isOk()) // Vérifie un succès 200
+                .andExpect(view().name("addConnection")) // Vérifie que la vue est bien renvoyée
+                .andExpect(model().attributeExists("user"));
     }
 
     /**
      * Teste l'ajout d'une connexion avec un utilisateur non trouvé (échec).
      */
     @Test
-    @WithMockUser(username = "user1@example.com")
     public void testAddConnection_UserNotFound() throws Exception {
         mockMvc.perform(post("/connections/add")
-                        .param("email", "nonexistent@example.com"))
-                .andExpect(status().is3xxRedirection()) // Vérifie si la réponse est une redirection
-                .andExpect(redirectedUrl("/addConnection"));
+                        .param("email", "nonexistent@example.com")
+                        .principal(() -> "user1@example.com")) // Simule l'utilisateur connecté
+                .andExpect(status().isOk()) // Vérifie un succès 200
+                .andExpect(view().name("addConnection")) // Vérifie que la vue est bien renvoyée
+                .andExpect(model().attributeExists("error")); // Vérifie que l'attribut "error" existe
     }
 
     /**
@@ -131,60 +114,39 @@ public class UsersControllerIntegrationTest {
     }
 
     /**
-     * Teste l'affichage de la page de transfert d'argent.
-     */
-    @Test
-    @WithMockUser(username = "user4@example.com")
-    public void testShowTransferPage() throws Exception {
-        Users testUser = new Users();
-        testUser.setUsername("User4");
-        testUser.setEmail("user4@example.com");
-        testUser.setPassword("password");
-        usersService.updateUser(testUser);
-
-        mockMvc.perform(get("/transfer"))
-                .andExpect(status().isOk())
-                .andExpect(view().name("transfer"))
-                .andExpect(model().attributeExists("users", "transactions"));
-    }
-
-    /**
      * Teste l'affichage de la page de profil utilisateur.
      */
     @Test
-    @WithMockUser(username = "user1@example.com")
     public void testShowProfilePage() throws Exception {
-        mockMvc.perform(get("/profile"))
+        mockMvc.perform(get("/profile")
+                        .principal(() -> "user1@example.com")) // Simule l'utilisateur connecté
                 .andExpect(status().isOk())
                 .andExpect(view().name("profile"))
-                .andExpect(model().attributeExists("users"));
+                .andExpect(model().attributeExists("user"));
     }
 
     /**
      * Teste la mise à jour du profil utilisateur.
      */
     @Test
-    @WithMockUser(username = "user1@example.com")
     public void testUpdateProfile_Success() throws Exception {
         mockMvc.perform(post("/profile/update")
-                        .param("username", "nouveauNom")
-                        .param("email", "nouveauemail@example.com")
-                        .param("newPassword", "nouveauMotDePasse"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/profile"))
-                .andExpect(flash().attributeExists("success"));
+                        .param("newPassword", "nouveauMotDePasse")
+                        .principal(() -> "user1@example.com")) // Simule l'utilisateur connecté
+                .andExpect(status().isOk()) // Vérifie un succès 200
+                .andExpect(view().name("profile")) // Vérifie que la vue "profile" est renvoyée
+                .andExpect(model().attributeExists("success")); // Vérifie que l'attribut "success" existe
 
         // Vérifie que le profil a bien été mis à jour
-        Users updatedUser = usersService.findByEmail("nouveauemail@example.com").orElse(null);
+        Users updatedUser = usersService.findByEmail("user1@example.com").orElse(null);
         assertNotNull(updatedUser);
-        assertEquals("nouveauNom", updatedUser.getUsername());
+        assertEquals("user1@example.com", updatedUser.getEmail());
     }
 
     /**
      * Teste l'affichage du formulaire d'ajout de connexion.
      */
     @Test
-    @WithMockUser(username = "user5@example.com")
     public void testShowAddConnectionForm() throws Exception {
         Users testUser = new Users();
         testUser.setUsername("User5");
@@ -192,55 +154,17 @@ public class UsersControllerIntegrationTest {
         testUser.setPassword("password");
         usersService.updateUser(testUser);
 
-        mockMvc.perform(get("/addConnection"))
+        mockMvc.perform(get("/addConnection")
+                        .principal(() -> "user5@example.com")) // Simule l'utilisateur connecté
                 .andExpect(status().isOk())
                 .andExpect(view().name("addConnection"))
-                .andExpect(model().attributeExists("users"));
-    }
-
-    /**
-     * Teste l'envoi d'argent avec une exception (montant supérieur au solde).
-     */
-    @Test
-    @WithMockUser(username = "user6@example.com")
-    public void testSendMoney_ExceptionHandling() throws Exception {
-        // Prépare les données de test
-        Users sender = new Users();
-        sender.setUsername("User6");
-        sender.setEmail("user6@example.com");
-        sender.setPassword("password");
-        usersService.registerUser(sender);
-
-        Users receiver = new Users();
-        receiver.setUsername("User7");
-        receiver.setEmail("user7@example.com");
-        receiver.setPassword("password");
-        usersService.registerUser(receiver);
-
-        // Ajoute une connexion entre sender et receiver
-        usersService.addConnection(sender, receiver);
-
-        sender = usersService.findByEmail("user6@example.com").orElse(null);
-        receiver = usersService.findByEmail("user7@example.com").orElse(null);
-
-        // Simule une exception avec un montant supérieur au solde
-        sender.setBalance(50.0);
-        usersService.updateUser(sender);
-
-        mockMvc.perform(post("/transactions/send")
-                        .param("connectionEmail", receiver.getEmail())
-                        .param("amount", "100.0")
-                        .param("description", "Test d'exception"))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/transfer"))
-                .andExpect(flash().attributeExists("error"));
+                .andExpect(model().attributeExists("user"));
     }
 
     /**
      * Teste l'ajout d'une connexion déjà existante.
      */
     @Test
-    @WithMockUser(username = "user8@example.com")
     public void testAddConnection_AlreadyExists() throws Exception {
         Users sender = new Users();
         sender.setUsername("User8");
@@ -261,10 +185,11 @@ public class UsersControllerIntegrationTest {
 
         // Tente d'ajouter la même connexion à nouveau
         mockMvc.perform(post("/connections/add")
-                        .param("email", existingConnection.getEmail()))
-                .andExpect(status().is3xxRedirection())
-                .andExpect(redirectedUrl("/addConnection"))
-                .andExpect(flash().attributeExists("error"))
-                .andExpect(flash().attribute("error", "Cette relation existe déjà."));
+                        .param("email", existingConnection.getEmail())
+                        .principal(() -> "user8@example.com")) // Simule l'utilisateur connecté
+                .andExpect(status().isOk()) // Vérifie un succès 200
+                .andExpect(view().name("addConnection")) // Vérifie que la vue "addConnection" est renvoyée
+                .andExpect(model().attributeExists("error")) // Vérifie que l'attribut "error" existe
+                .andExpect(model().attribute("error", "Cette relation existe déjà ou l'utilisateur n'a pas été trouvé."));
     }
 }

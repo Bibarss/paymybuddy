@@ -1,7 +1,7 @@
 package com.paymybuddy.repository;
 
-import com.paymybuddy.model.Transaction;
-import com.paymybuddy.model.Users;
+import com.paymybuddy.entity.Transaction;
+import com.paymybuddy.entity.Users;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.junit.jupiter.api.BeforeEach;
