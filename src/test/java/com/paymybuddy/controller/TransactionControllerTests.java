@@ -1,14 +1,13 @@
 package com.paymybuddy.controller;
 
-import com.paymybuddy.entity.Users;
-import com.paymybuddy.repository.UsersRepository;
+import com.paymybuddy.entity.User;
+import com.paymybuddy.repository.UserRepository;
+import com.paymybuddy.service.UserService;
 import com.paymybuddy.service.TransactionService;
-import com.paymybuddy.service.UsersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.setup.MockMvcBuilders;
@@ -16,8 +15,7 @@ import org.springframework.web.context.WebApplicationContext;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
-import static org.junit.jupiter.api.Assertions.assertNotNull;
+
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -32,13 +30,13 @@ public class TransactionControllerTests {
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private UsersService usersService;
+    private UserService usersService;
 
     @Autowired
     private TransactionService transactionService;
 
     @Autowired
-    private UsersRepository usersRepository;
+    private UserRepository usersRepository;
 
     private MockMvc mockMvc;
 
@@ -55,7 +53,7 @@ public class TransactionControllerTests {
      */
     @Test
     public void testSendMoney_Success() throws Exception {
-        Optional<Users> user2 = usersService.findByEmail("user2@example.com");
+        Optional<User> user2 = usersService.findByEmail("user2@example.com");
 
         mockMvc.perform(post("/transactions/send")
                         .param("connectionEmail", user2.get().getEmail())
@@ -72,7 +70,7 @@ public class TransactionControllerTests {
      */
     @Test
     public void testShowTransferPage() throws Exception {
-        Users testUser = new Users();
+        User testUser = new User();
         testUser.setUsername("User4");
         testUser.setEmail("user4@example.com");
         testUser.setPassword("password");
@@ -91,13 +89,13 @@ public class TransactionControllerTests {
     @Test
     public void testSendMoney_ExceptionHandling() throws Exception {
         // Prépare les données de test
-        Users sender = new Users();
+        User sender = new User();
         sender.setUsername("User6");
         sender.setEmail("user6@example.com");
         sender.setPassword("password");
         usersService.registerUser(sender);
 
-        Users receiver = new Users();
+        User receiver = new User();
         receiver.setUsername("User7");
         receiver.setEmail("user7@example.com");
         receiver.setPassword("password");

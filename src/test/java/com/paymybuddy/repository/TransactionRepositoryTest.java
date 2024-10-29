@@ -1,11 +1,12 @@
 package com.paymybuddy.repository;
 
 import com.paymybuddy.entity.Transaction;
-import com.paymybuddy.entity.Users;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.paymybuddy.entity.User;
+
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
@@ -26,12 +27,12 @@ public class TransactionRepositoryTest {
     private TransactionRepository transactionRepository;
 
     @Autowired
-    private UsersRepository usersRepository; // Utilisation du repository Users pour créer des utilisateurs
+    private UserRepository usersRepository; // Utilisation du repository Users pour créer des utilisateurs
 
-    private Optional<Users> sender;
-    private Optional<Users> receiver;
+    private Optional<User> sender;
+    private Optional<User> receiver;
 
-    private static final Logger logger = LogManager.getLogger(TransactionRepositoryTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(TransactionRepositoryTest.class);
 
     /**
      * Méthode exécutée avant chaque test pour initialiser les utilisateurs.
@@ -75,7 +76,7 @@ public class TransactionRepositoryTest {
     @Test
     public void findBySender_ShouldReturnEmptyList_WhenSenderHasNoTransactions() {
         // given : création d'un nouvel utilisateur sans transactions
-        Users newSender = new Users();
+        User newSender = new User();
         newSender.setUsername("NewSender");
         newSender.setEmail("newsender@example.com");
         newSender.setPassword("password789");
@@ -94,7 +95,7 @@ public class TransactionRepositoryTest {
     @Test
     public void findByReceiver_ShouldReturnEmptyList_WhenReceiverHasNoTransactions() {
         // given : création d'un nouvel utilisateur sans transactions
-        Users newReceiver = new Users();
+        User newReceiver = new User();
         newReceiver.setUsername("NewReceiver");
         newReceiver.setEmail("newreceiver@example.com");
         newReceiver.setPassword("password789");

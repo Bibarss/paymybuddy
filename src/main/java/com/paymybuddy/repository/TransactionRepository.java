@@ -1,9 +1,11 @@
 package com.paymybuddy.repository;
 
 import com.paymybuddy.entity.Transaction;
-import com.paymybuddy.entity.Users;
+import com.paymybuddy.entity.User;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
+
 import java.util.List;
 
 /**
@@ -19,7 +21,7 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * @param sender L'utilisateur qui a envoyé les transactions.
      * @return La liste des transactions envoyées par l'utilisateur.
      */
-    List<Transaction> findBySender(Users sender);
+    List<Transaction> findBySender(User sender);
 
     /**
      * Récupère la liste des transactions reçues par un utilisateur donné.
@@ -27,5 +29,5 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * @param receiver L'utilisateur qui a reçu les transactions.
      * @return La liste des transactions reçues par l'utilisateur.
      */
-    List<Transaction> findByReceiver(Users receiver);
+    List<Transaction> findByReceiver(User receiver);
 }

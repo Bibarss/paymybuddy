@@ -1,0 +1,256 @@
+/* Style général */
+body, html {
+    margin: 0;
+    padding: 0;
+    height: 100%;
+    font-family: 'Arial', sans-serif;
+    background-color: #f4f4f4;
+    display: flex;
+    flex-direction: column;
+}
+
+/* Conteneur principal */
+.container {
+    width: 100%;
+    max-width: 1200px;
+    padding: 20px;
+    margin: 0 auto;
+}
+
+/* Barre de navigation */
+header {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    padding: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+header div {
+    font-weight: bold;
+    font-size: 24px;
+}
+
+nav {
+    margin-left: auto;
+}
+
+nav a {
+    margin: 0 15px;
+    text-decoration: none;
+    color: #000;
+    font-weight: bold;
+}
+
+nav a.active {
+    color: #007bff; /* Bleu pour indiquer la section active */
+}
+
+nav a:hover {
+    color: #007bff;
+}
+
+/* Boîte de formulaire et contenu */
+.form-box, .content-box {
+    background-color: #ffffff;
+    padding: 20px;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    text-align: center;
+    margin: 20px auto;
+    width: 300px;
+}
+
+/* Titre */
+.title {
+    background-color: #ffa500;
+    color: white;
+    padding: 10px;
+    border-radius: 5px;
+    margin-bottom: 20px;
+}
+
+/* Champs de saisie */
+input[type="text"],
+input[type="email"],
+input[type="password"],
+input[type="number"],
+select {
+    width: 90%;
+    padding: 10px;
+    margin: 10px 0;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+/* Bouton */
+button {
+    width: 90%;
+    padding: 10px;
+    background-color: #007bff;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+button:hover {
+    background-color: #0056b3;
+}
+
+/* Partie principale */
+main {
+    flex: 1;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    padding: 20px;
+}
+
+/* Sections cachées par défaut */
+.section {
+    display: none;
+    width: 100%;
+    max-width: 800px;
+}
+
+/* Centrer les contenus */
+.center-content {
+    text-align: left;
+}
+
+/* Section Profil */
+#profileSection .profile-content {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: 10px;
+    align-items: center;
+}
+
+#profileSection button {
+    grid-column: 2;
+    justify-self: start; /* Décale le bouton à gauche */
+    background-color: #FFA500;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+    margin-top: 20px;
+}
+
+/* Style du formulaire de transfert */
+.transfer-top, .transfer-bottom {
+    margin-bottom: 20px;
+}
+
+.transfer-form {
+    display: flex;
+    justify-content: space-between;
+    gap: 20px;
+}
+
+.transfer-form input,
+.transfer-form select {
+    padding: 10px;
+    width: 100%;
+    max-width: 200px;
+    box-sizing: border-box;
+    font-size: 16px;
+}
+
+/* Bouton Payer */
+.transfer-form button {
+    background-color: #007bff;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    border: none;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+/* Style du tableau des transactions */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+table, th, td {
+    border: 1px solid #ddd;
+}
+
+th, td {
+    padding: 10px;
+    text-align: left;
+}
+
+/* Style pour le formulaire d'ajout de relation */
+#addConnectionSection form {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 20px;
+}
+
+#addConnectionSection input {
+    padding: 10px;
+    font-size: 16px;
+    margin-right: 10px;
+    width: 250px;
+    box-sizing: border-box;
+    border: 1px solid #ddd;
+    border-radius: 5px;
+}
+
+#addConnectionSection button {
+    background-color: #FFA500;
+    border: none;
+    color: white;
+    padding: 10px 20px;
+    font-size: 16px;
+    cursor: pointer;
+    border-radius: 5px;
+}
+
+#addConnectionSection h5 {
+    text-align: left;
+    font-size: 18px;
+    margin-bottom: 10px;
+}
+
+/* Messages de succès et d'erreur */
+.success {
+    color: green;
+    margin-top: 10px;
+}
+
+.error {
+    color: red;
+    margin-top: 10px;
+}
+
+/* Ajustements pour les erreurs de validation */
+input:invalid {
+    border-color: #ff4d4d;
+}
+
+/* Balance */
+.balance {
+    text-align: center;
+    margin: 20px 0;
+}
+
+/* Spécifique à la page de connexion et d'inscription */
+.login-register-body {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+}

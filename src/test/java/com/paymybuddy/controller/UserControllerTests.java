@@ -1,9 +1,9 @@
 package com.paymybuddy.controller;
 
-import com.paymybuddy.entity.Users;
-import com.paymybuddy.repository.UsersRepository;
+import com.paymybuddy.entity.User;
+import com.paymybuddy.repository.UserRepository;
+import com.paymybuddy.service.UserService;
 import com.paymybuddy.service.TransactionService;
-import com.paymybuddy.service.UsersService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -26,19 +26,19 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
  */
 @ActiveProfiles("test") // Utilise le profil de test avec H2 pour les tests en mémoire
 @SpringBootTest
-public class UsersControllerTests {
+public class UserControllerTests {
 
     @Autowired
     private WebApplicationContext webApplicationContext;
 
     @Autowired
-    private UsersService usersService;
+    private UserService usersService;
 
     @Autowired
     private TransactionService transactionService;
 
     @Autowired
-    private UsersRepository usersRepository;
+    private UserRepository usersRepository;
 
     private MockMvc mockMvc;
 
@@ -69,7 +69,7 @@ public class UsersControllerTests {
      */
     @Test
     public void testAddConnection_Success() throws Exception {
-        Optional<Users> user2 = usersService.findByEmail("user2@example.com");
+        Optional<User> user2 = usersService.findByEmail("user2@example.com");
 
         mockMvc.perform(post("/connections/add")
                         .param("email", user2.get().getEmail())
@@ -138,7 +138,7 @@ public class UsersControllerTests {
                 .andExpect(model().attributeExists("success")); // Vérifie que l'attribut "success" existe
 
         // Vérifie que le profil a bien été mis à jour
-        Users updatedUser = usersService.findByEmail("user1@example.com").orElse(null);
+        User updatedUser = usersService.findByEmail("user1@example.com").orElse(null);
         assertNotNull(updatedUser);
         assertEquals("user1@example.com", updatedUser.getEmail());
     }
@@ -148,7 +148,7 @@ public class UsersControllerTests {
      */
     @Test
     public void testShowAddConnectionForm() throws Exception {
-        Users testUser = new Users();
+        User testUser = new User();
         testUser.setUsername("User5");
         testUser.setEmail("user5@example.com");
         testUser.setPassword("password");
@@ -166,13 +166,13 @@ public class UsersControllerTests {
      */
     @Test
     public void testAddConnection_AlreadyExists() throws Exception {
-        Users sender = new Users();
+        User sender = new User();
         sender.setUsername("User8");
         sender.setEmail("user8@example.com");
         sender.setPassword("password");
         usersService.registerUser(sender);
 
-        Users receiver = new Users();
+        User receiver = new User();
         receiver.setUsername("User9");
         receiver.setEmail("user9@example.com");
         receiver.setPassword("password");
@@ -181,7 +181,7 @@ public class UsersControllerTests {
         // Ajoute la connexion entre sender et receiver
         usersService.addConnection(sender, receiver);
 
-        Users existingConnection = usersService.findByEmail("user9@example.com").orElse(null);
+        User existingConnection = usersService.findByEmail("user9@example.com").orElse(null);
 
         // Tente d'ajouter la même connexion à nouveau
         mockMvc.perform(post("/connections/add")
@@ -190,6 +190,6 @@ public class UsersControllerTests {
                 .andExpect(status().isOk()) // Vérifie un succès 200
                 .andExpect(view().name("addConnection")) // Vérifie que la vue "addConnection" est renvoyée
                 .andExpect(model().attributeExists("error")) // Vérifie que l'attribut "error" existe
-                .andExpect(model().attribute("error", "Cette relation existe déjà ou l'utilisateur n'a pas été trouvé."));
+                .andExpect(model().attribute("error", "Cette relation existe déjà."));
     }
 }

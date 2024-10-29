@@ -10,7 +10,7 @@ import java.util.*;
 @Data
 @Entity
 @Table(name = "users")
-public class Users {
+public class User {
 
     /**
      * L'ID unique de l'utilisateur, généré automatiquement.
@@ -67,6 +67,6 @@ public class Users {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name = "connection_id")
     )
-    private List<Users> connections = new ArrayList<>();
+    private List<User> connections = new ArrayList<>();
 
 }

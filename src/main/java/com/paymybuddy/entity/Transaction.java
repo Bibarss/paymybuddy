@@ -35,7 +35,7 @@ public class Transaction {
      */
     @ManyToOne
     @JoinColumn(name = "sender_id", nullable = false)
-    private Users sender;
+    private User sender;
 
     /**
      * L'utilisateur qui reçoit la transaction.
@@ -43,7 +43,7 @@ public class Transaction {
      */
     @ManyToOne
     @JoinColumn(name = "receiver_id", nullable = false)
-    private Users receiver;
+    private User receiver;
 
     /**
      * La date et l'heure de la transaction. Initialisée à la date et l'heure actuelles.

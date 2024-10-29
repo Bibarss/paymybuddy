@@ -1,36 +1,36 @@
 package com.paymybuddy.controller;
 
 import com.paymybuddy.entity.Transaction;
-import com.paymybuddy.entity.Users;
+import com.paymybuddy.entity.User;
+import com.paymybuddy.service.UserService;
 import com.paymybuddy.service.TransactionService;
-import com.paymybuddy.service.UsersService;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 
 import lombok.Data;
-import org.springframework.web.servlet.mvc.support.RedirectAttributes;
 
 import java.security.Principal;
 import java.util.List;
 
+
 /**
- * Contrôleur pour gérer les transactions liées à l'utilisateur : lister les differentes transactions et effectuer une transaction
+ * Contrôleur pour gérer les transactions liées à l'utilisateur
+ * lister les differentes transactions et effectuer une transaction
  */
 @Data
 @Controller
 public class TransactionController {
 
-    private final UsersService usersService;
+    private final UserService usersService;
     private final TransactionService transactionService;
 
-    private static final Logger logger = LogManager.getLogger(TransactionController.class);
+    private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
-    public TransactionController(UsersService usersService, TransactionService transactionService) {
+    public TransactionController(UserService usersService, TransactionService transactionService) {
         this.usersService = usersService;
         this.transactionService = transactionService;
     }
@@ -44,7 +44,7 @@ public class TransactionController {
      */
     @GetMapping("/transfer")
     public String showTransferPage(Principal principal, Model model) {
-        Users user = usersService.findByEmail(principal.getName()).orElse(null);
+        User user = usersService.findByEmail(principal.getName()).orElse(null);
         model.addAttribute("user", user);
         if (user != null) {
             List<Transaction> transactions = transactionService.findTransactionsForUser(user);
@@ -73,8 +73,8 @@ public class TransactionController {
 
         logger.info("Envoi d'argent de {} à {}", principal.getName(), connectionEmail);
 
-        Users sender = usersService.findByEmail(principal.getName()).orElse(null);
-        Users receiver = usersService.findByEmail(connectionEmail).orElse(null);
+        User sender = usersService.findByEmail(principal.getName()).orElse(null);
+        User receiver = usersService.findByEmail(connectionEmail).orElse(null);
 
         if (sender != null && receiver != null && sender.getConnections().contains(receiver)) {
             try {

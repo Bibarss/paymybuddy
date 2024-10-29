@@ -1,40 +1,89 @@
-package com.paymybuddy.service;
+package com.paymybuddy.service.impl;
 
-import com.paymybuddy.entity.Users;
-import com.paymybuddy.repository.UsersRepository;
+import com.paymybuddy.entity.User;
+import com.paymybuddy.repository.UserRepository;
+import com.paymybuddy.service.UserService;
 
+import lombok.Data;
+
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import lombok.Data;
-
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Optional;
+
 
 /**
  * Service pour gérer les opérations liées à l'utilisateur.
  */
+
+
 @Data
 @Service
-public class UsersService implements UserDetailsService {
+public class UserServiceImpl implements UserService, UserDetailsService {
 
-    private final UsersRepository usersRepository;
+    private final UserRepository userRepository;
 
     private final PasswordEncoder passwordEncoder;
 
-    private static final Logger logger = LogManager.getLogger(UsersService.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceImpl.class);
 
-    public UsersService(UsersRepository userRepository, PasswordEncoder passwordEncoder) {
-        this.usersRepository = userRepository;
+    public UserServiceImpl(UserRepository userRepository, PasswordEncoder passwordEncoder) {
+        this.userRepository = userRepository;
         this.passwordEncoder = passwordEncoder;
     }
 
+
+
+
+    /**
+     * Recherche un utilisateur par son adresse e-mail.
+     *
+     * @param email L'adresse e-mail de l'utilisateur.
+     * @return Un objet Optional contenant l'utilisateur s'il existe, sinon Optional vide.
+     */
+    @Override
+    public Optional<User> findByEmail(String email) {
+        return userRepository.findByEmail(email);
+    }
+
+    /**
+     * Recherche un utilisateur par son ID.
+     *
+     * @param id L'ID de l'utilisateur.
+     * @return Un objet Optional contenant l'utilisateur s'il existe, sinon Optional vide.
+     */
+    @Override
+    public Optional<User> findById(Long id) {
+        return userRepository.findById(id);
+    }
+
+    /**
+     * Récupère la liste des tous les utilisateurs.
+     *
+     * @return La liste des tous les utilisateurs.
+     */
+    @Override
+    public List<User> findAll() {
+        return userRepository.findAll();
+    }
+
+    /**
+     * Recherche un utilisateur par son username
+     *
+     * @return La liste des toutes les connections d'un utilisateur et l'utilisateur
+     */
+    @Override
+    public Optional<User> loadByUsername(String username) {
+        return userRepository.findByUsername(username);
+    }
 
 
     /**
@@ -45,18 +94,16 @@ public class UsersService implements UserDetailsService {
      * @throws UsernameNotFoundException Si l'utilisateur n'est pas trouvé.
      */
     @Override
-    @Transactional
     public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        logger.info("Chargement de l'utilisateur avec l'e-mail: {}", email);
-        Users user = findByEmail(email)
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé avec l'email : " + email));
-
-        return org.springframework.security.core.userdetails.User.builder()
-                .username(user.getEmail())
-                .password(user.getPassword())
-                .roles("USER") // Vous pouvez gérer les rôles si nécessaire
-                .build();
+        return userRepository.findByEmail(email)
+                .map(user -> org.springframework.security.core.userdetails.User.builder()
+                        .username(user.getEmail())
+                        .password(user.getPassword())
+                        .authorities(new ArrayList<>()) // Aucune autorité
+                        .build())
+                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
     }
+
 
     /**
      * Enregistre un nouvel utilisateur.
@@ -64,12 +111,13 @@ public class UsersService implements UserDetailsService {
      * @param user L'utilisateur à enregistrer.
      * @return L'utilisateur enregistré.
      */
-    public Users registerUser(Users user) {
+    @Override
+    public User registerUser(User user) {
         // Encodez le mot dae passe avant de le sauvegarder
         logger.info("Enregistrement d'un nouvel utilisateur: {}", user.getEmail());
         user.setPassword(passwordEncoder.encode(user.getPassword()));
         user.setBalance(100.0); // Par exemple, crédit initial
-        Users registeredUser = usersRepository.save(user);
+        User registeredUser = userRepository.save(user);
         logger.info("Utilisateur enregistré avec succès: {}", registeredUser.getEmail());
         return registeredUser;
     }
@@ -77,25 +125,14 @@ public class UsersService implements UserDetailsService {
 
 
     /**
-     * Recherche un utilisateur par son adresse e-mail.
-     *
-     * @param email L'adresse e-mail de l'utilisateur.
-     * @return Un objet Optional contenant l'utilisateur, s'il existe.
-     */
-    public Optional<Users> findByEmail(String email) {
-        logger.info("Recherche de l'utilisateur avec l'e-mail: {}", email);
-        return usersRepository.findByEmail(email);
-    }
-
-
-    /**
      * Met à jour les informations de l'utilisateur.
      *
      * @param user L'utilisateur à mettre à jour.
      */
-    public void updateUser(Users user) {
+    @Override
+    public void updateUser(User user) {
         logger.info("Mise à jour des informations de l'utilisateur: {}", user.getEmail());
-        usersRepository.save(user);
+        userRepository.save(user);
         logger.info("Informations de l'utilisateur mises à jour avec succès.");
     }
 
@@ -105,7 +142,8 @@ public class UsersService implements UserDetailsService {
      * @param user       L'utilisateur ajoutant une connexion.
      * @param connection L'utilisateur à ajouter comme connexion.
      */
-    public void addConnection(Users user, Users connection) {
+    @Override
+    public void addConnection(User user, User connection) {
         logger.info("Ajout d'une connexion pour l'utilisateur: {}", user.getEmail());
         if (!user.getConnections().contains(connection)) {
             user.getConnections().add(connection);
@@ -124,7 +162,8 @@ public class UsersService implements UserDetailsService {
      * @param user        L'utilisateur dont le mot de passe doit être mis à jour.
      * @param newPassword Le nouveau mot de passe.
      */
-    public void updatePassword(Users user, String newPassword) {
+    @Override
+    public void updatePassword(User user, String newPassword) {
         logger.info("Mise à jour du mot de passe pour l'utilisateur: {}", user.getEmail());
         user.setPassword(passwordEncoder.encode(newPassword));
         updateUser(user);
@@ -139,10 +178,12 @@ public class UsersService implements UserDetailsService {
      * @param connection L'utilisateur à vérifier comme connexion.
      * @return true si l'utilisateur est une connexion, sinon false.
      */
-    public boolean isConnection(Users user, Users connection) {
+    @Override
+    public boolean isConnection(User user, User connection) {
         logger.info("Vérification de la connexion entre l'utilisateur: {} et: {}", user.getEmail(), connection.getEmail());
         return user.getConnections().contains(connection);
     }
+
 
 
 }

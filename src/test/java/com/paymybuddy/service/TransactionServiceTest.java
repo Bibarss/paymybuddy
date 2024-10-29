@@ -1,13 +1,13 @@
 package com.paymybuddy.service;
 
 import com.paymybuddy.entity.Transaction;
-import com.paymybuddy.entity.Users;
+import com.paymybuddy.entity.User;
 import com.paymybuddy.repository.TransactionRepository;
-import com.paymybuddy.repository.UsersRepository;
+import com.paymybuddy.repository.UserRepository;
+import com.paymybuddy.service.impl.TransactionServiceImpl;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.test.context.ActiveProfiles;
@@ -29,26 +29,32 @@ public class TransactionServiceTest {
     private TransactionRepository transactionRepository;
 
     @Mock
-    private UsersRepository usersRepository;
+    private UserRepository usersRepository;
 
-    @InjectMocks
+    //@InjectMocks
     private TransactionService transactionService;
 
-    private Users sender;
-    private Users receiver;
+    private User sender;
+    private User receiver;
     private Transaction transaction;
+
+
 
     /**
      * Initialisation des données avant chaque test
      */
     @BeforeEach
     public void setUp() {
-        sender = new Users();
+
+        // Crée une instance de UsersServiceImpl en utilisant les mocks
+        transactionService = new TransactionServiceImpl(transactionRepository, usersRepository);
+
+        sender = new User();
         sender.setId(1L);
         sender.setEmail("sender@example.com");
         sender.setBalance(1000.0);
 
-        receiver = new Users();
+        receiver = new User();
         receiver.setId(2L);
         receiver.setEmail("receiver@example.com");
         receiver.setBalance(500.0);

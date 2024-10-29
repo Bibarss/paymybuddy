@@ -1,10 +1,11 @@
 package com.paymybuddy;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+
 
 /**
  * Classe principale de l'application PayMyBuddy.
@@ -14,7 +15,7 @@ import org.apache.logging.log4j.Logger;
 public class PaymybuddyApplication {
 
 	// Création d'un logger pour suivre les événements de l'application
-	private static final Logger logger = LogManager.getLogger(PaymybuddyApplication.class);
+	private static final Logger logger = LoggerFactory.getLogger(PaymybuddyApplication.class);
 
 	/**
 	 * Point d'entrée principal de l'application.

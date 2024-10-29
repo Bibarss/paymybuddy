@@ -1,11 +1,10 @@
 package com.paymybuddy.controller;
 
-import com.paymybuddy.entity.Users;
-import com.paymybuddy.service.TransactionService;
-import com.paymybuddy.service.UsersService;
+import com.paymybuddy.entity.User;
+import com.paymybuddy.service.UserService;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -20,14 +19,14 @@ import java.security.Principal;
  * ajout de relations (connexion)
  */
 @Controller
-public class UsersController {
+public class UserController {
 
-    private final UsersService usersService;
+    private final UserService usersService;
 
 
-    private static final Logger logger = LogManager.getLogger(UsersController.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UsersController(UsersService usersService) {
+    public UserController(UserService usersService) {
         this.usersService = usersService;
     }
 
@@ -40,7 +39,7 @@ public class UsersController {
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
         logger.info("Affichage du formulaire d'inscription.");
-        model.addAttribute("user", new Users());
+        model.addAttribute("user", new User());
         return "register";
     }
 
@@ -51,7 +50,7 @@ public class UsersController {
      * @return Redirige vers la page de connexion.
      */
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") Users user) {
+    public String registerUser(@ModelAttribute("user") User user) {
         logger.info("Enregistrement d'un nouvel utilisateur: {}", user.getEmail());
         usersService.registerUser(user);
         return "redirect:/login";
@@ -72,7 +71,7 @@ public class UsersController {
      * Affiche la page de profil de l'utilisateur connecté.
      *
      * @param principal L'objet Principal représentant l'utilisateur actuellement connecté.
-     * @param model Le modèle pour la vue.
+     * @param model     Le modèle pour la vue.
      * @return La page de profil.
      */
     @GetMapping("/profile")
@@ -80,7 +79,7 @@ public class UsersController {
         String username = principal.getName(); // Récupérer le nom d'utilisateur depuis Principal
         logger.info("Affichage du profil pour l'utilisateur: {}", username);
 
-        Users user = usersService.findByEmail(username).orElse(null);
+        User user = usersService.findByEmail(username).orElse(null);
         model.addAttribute("user", user);
 
         return "profile"; // Correspond au fichier profile.html
@@ -89,20 +88,18 @@ public class UsersController {
     /**
      * Modifie le mot de passe de l'utilisateur (si fourni).
      *
-     * @param principal L'utilisateur actuellement connecté.
+     * @param principal   L'utilisateur actuellement connecté.
      * @param newPassword Le nouveau mot de passe, s'il est fourni.
-     * @param model Le modèle pour la vue.
+     * @param model       Le modèle pour la vue.
      * @return Redirige vers la page du profil.
      */
     @PostMapping("/profile/update")
-    public String updateProfile(Principal principal,
-                                @RequestParam(value = "newPassword", required = false) String newPassword,
-                                Model model) {
+    public String updateProfile(Principal principal, @RequestParam(value = "newPassword", required = false) String newPassword, Model model) {
 
         String username = principal.getName();
         logger.info("Mise à jour du mot de passe pour l'utilisateur: {}", username);
 
-        Users user = usersService.findByEmail(username).orElse(null);
+        User user = usersService.findByEmail(username).orElse(null);
 
         if (user != null) {
             if (newPassword != null && !newPassword.isEmpty()) {
@@ -123,13 +120,13 @@ public class UsersController {
      * Affiche la page d'ajout de relation.
      *
      * @param principal L'utilisateur actuellement connecté.
-     * @param model Le modèle pour la vue.
+     * @param model     Le modèle pour la vue.
      * @return La page d'ajout de relation.
      */
     @GetMapping("/addConnection")
     public String showAddConnectionForm(Principal principal, Model model) {
-        String username = principal.getName();
-        Users user = usersService.findByEmail(username).orElse(null);
+        String emailUser = principal.getName();
+        User user = usersService.findByEmail(emailUser).orElse(null);
         logger.info("Affichage du formulaire pour ajouter une connexion.");
         model.addAttribute("user", user);
 
@@ -140,28 +137,31 @@ public class UsersController {
      * Gère l'ajout d'une connexion (relation).
      *
      * @param principal L'utilisateur actuellement connecté.
-     * @param email L'adresse e-mail de l'utilisateur à ajouter.
-     * @param model Le modèle pour la vue.
+     * @param email     L'adresse e-mail de l'utilisateur à ajouter.
+     * @param model     Le modèle pour la vue.
      * @return Redirige vers la page d'ajout de relations.
      */
     @PostMapping("/connections/add")
-    public String addConnection(Principal principal,
-                                @RequestParam("email") String email,
-                                Model model) {
+    public String addConnection(Principal principal, @RequestParam("email") String email, Model model) {
 
-        String username = principal.getName();
-        logger.info("Ajout d'une nouvelle connexion pour l'utilisateur: {}", username);
+        String emailUser = principal.getName();
+        logger.info("Ajout d'une nouvelle connexion pour l'utilisateur: {}", emailUser);
 
-        Users user = usersService.findByEmail(username).orElse(null);
-        Users connection = usersService.findByEmail(email).orElse(null);
+        User user = usersService.findByEmail(emailUser).orElse(null);
+        User connection = usersService.findByEmail(email).orElse(null);
 
-        if (connection != null && !user.getConnections().contains(connection)) {
-            usersService.addConnection(user, connection);
-            logger.info("Connexion ajoutée avec succès pour l'utilisateur: {}", username);
-            model.addAttribute("success", "Relation ajoutée avec succès.");
+        if (user != null && connection != null) {
+            if (!user.getConnections().contains(connection)) {
+                usersService.addConnection(user, connection);
+                logger.info("Connexion ajoutée avec succès pour l'utilisateur: {}", emailUser);
+                model.addAttribute("success", "Relation ajoutée avec succès.");
+            } else {
+                logger.warn("La relation existe déjà pour l'utilisateur: {}", emailUser);
+                model.addAttribute("error", "Cette relation existe déjà.");
+            }
         } else {
-            logger.warn("Impossible d'ajouter la connexion pour l'utilisateur: {}", username);
-            model.addAttribute("error", "Cette relation existe déjà ou l'utilisateur n'a pas été trouvé.");
+            logger.warn("Impossible de trouver l'utilisateur ou la connexion: {}", email);
+            model.addAttribute("error", "Utilisateur non trouvé.");
         }
 
         model.addAttribute("user", user);

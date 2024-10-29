@@ -1,16 +1,17 @@
 package com.paymybuddy.service;
 
-import com.paymybuddy.entity.Users;
-import com.paymybuddy.repository.UsersRepository;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import com.paymybuddy.entity.User;
+import com.paymybuddy.repository.UserRepository;
+import com.paymybuddy.service.impl.UserServiceImpl;
+
 import org.junit.jupiter.api.AfterEach;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
-import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
@@ -25,28 +26,32 @@ import static org.mockito.Mockito.*;
  */
 @ActiveProfiles("test") // Utilise le profil de test avec H2
 @ExtendWith(MockitoExtension.class) // Active Mockito pour les tests
-public class UsersServiceTest {
+public class UserServiceTest {
 
     @Mock
-    private UsersRepository usersRepository;
+    private UserRepository usersRepository;
 
     @Mock
     private PasswordEncoder passwordEncoder;
 
-    @InjectMocks
-    private UsersService usersService;
+    //@InjectMocks
+    private UserService usersService;
 
-    private static final Logger logger = LogManager.getLogger(UsersServiceTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserServiceTest.class);
 
-    private Users user;
+    private User user;
 
     /**
      * Initialisation des données avant chaque test
      */
     @BeforeEach
     public void setUp() {
+
+        // Crée une instance de UsersServiceImpl en utilisant les mocks
+        usersService = new UserServiceImpl(usersRepository, passwordEncoder);
+
         // Créez un utilisateur de test
-        user = new Users();
+        user = new User();
         user.setId(1L);
         user.setUsername("newUser");
         user.setPassword("passWord****");
@@ -108,18 +113,18 @@ public class UsersServiceTest {
      */
     @Test
     public void testRegisterUser() {
-        Users newUser = new Users();
+        User newUser = new User();
         newUser.setEmail("new@example.com");
         newUser.setPassword("newpassword");
 
         when(passwordEncoder.encode(anyString())).thenReturn("encodedPassword");
-        when(usersRepository.save(any(Users.class))).thenReturn(newUser);
+        when(usersRepository.save(any(User.class))).thenReturn(newUser);
 
-        Users registeredUser = usersService.registerUser(newUser);
+        User registeredUser = usersService.registerUser(newUser);
 
         assertNotNull(registeredUser); // Vérifie que l'utilisateur est bien enregistré
         assertEquals("new@example.com", registeredUser.getEmail());
-        verify(usersRepository, times(1)).save(any(Users.class)); // Vérifie que l'utilisateur est sauvegardé
+        verify(usersRepository, times(1)).save(any(User.class)); // Vérifie que l'utilisateur est sauvegardé
     }
 
     /**
@@ -131,7 +136,7 @@ public class UsersServiceTest {
 
         when(usersRepository.findByEmail(userEmail)).thenReturn(Optional.of(user));
 
-        Optional<Users> foundUser = usersService.findByEmail(userEmail);
+        Optional<User> foundUser = usersService.findByEmail(userEmail);
 
         assertTrue(foundUser.isPresent()); // Vérifie que l'utilisateur est trouvé
         assertEquals(userEmail, foundUser.get().getEmail());
@@ -145,7 +150,7 @@ public class UsersServiceTest {
     public void testFindByEmail_UserNotFound() {
         when(usersRepository.findByEmail(anyString())).thenReturn(Optional.empty());
 
-        Optional<Users> foundUser = usersService.findByEmail("nonexistent@example.com");
+        Optional<User> foundUser = usersService.findByEmail("nonexistent@example.com");
 
         assertFalse(foundUser.isPresent()); // Vérifie que l'utilisateur n'est pas trouvé
         verify(usersRepository, times(1)).findByEmail("nonexistent@example.com");
@@ -156,7 +161,7 @@ public class UsersServiceTest {
      */
     @Test
     public void testAddConnection() {
-        Users connection = new Users();
+        User connection = new User();
         connection.setEmail("friend@example.com");
 
         usersService.addConnection(user, connection);
@@ -194,7 +199,7 @@ public class UsersServiceTest {
      */
     @Test
     public void testIsConnection() {
-        Users connection = new Users();
+        User connection = new User();
         connection.setEmail("friend@example.com");
         user.getConnections().add(connection);
 
@@ -208,7 +213,7 @@ public class UsersServiceTest {
      */
     @Test
     public void testAddConnection_ConnectionAlreadyExists() {
-        Users connection = new Users();
+        User connection = new User();
         connection.setId(2L);
         connection.setEmail("friend@example.com");
 
