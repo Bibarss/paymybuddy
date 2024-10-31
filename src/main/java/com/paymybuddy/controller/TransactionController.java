@@ -25,13 +25,13 @@ import java.util.List;
 @Controller
 public class TransactionController {
 
-    private final UserService usersService;
+    private final UserService userService;
     private final TransactionService transactionService;
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionController.class);
 
-    public TransactionController(UserService usersService, TransactionService transactionService) {
-        this.usersService = usersService;
+    public TransactionController(UserService userService, TransactionService transactionService) {
+        this.userService = userService;
         this.transactionService = transactionService;
     }
 
@@ -44,7 +44,7 @@ public class TransactionController {
      */
     @GetMapping("/transfer")
     public String showTransferPage(Principal principal, Model model) {
-        User user = usersService.findByEmail(principal.getName()).orElse(null);
+        User user = userService.findByEmail(principal.getName()).orElse(null);
         model.addAttribute("user", user);
         if (user != null) {
             List<Transaction> transactions = transactionService.findTransactionsForUser(user);
@@ -73,8 +73,8 @@ public class TransactionController {
 
         logger.info("Envoi d'argent de {} à {}", principal.getName(), connectionEmail);
 
-        User sender = usersService.findByEmail(principal.getName()).orElse(null);
-        User receiver = usersService.findByEmail(connectionEmail).orElse(null);
+        User sender = userService.findByEmail(principal.getName()).orElse(null);
+        User receiver = userService.findByEmail(connectionEmail).orElse(null);
 
         if (sender != null && receiver != null && sender.getConnections().contains(receiver)) {
             try {

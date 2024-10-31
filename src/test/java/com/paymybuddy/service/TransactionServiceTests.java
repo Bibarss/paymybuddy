@@ -10,6 +10,7 @@ import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.ArrayList;
@@ -21,9 +22,10 @@ import static org.mockito.Mockito.*;
 /**
  * Classe de test unitaire pour TransactionService
  */
-@ActiveProfiles("test") // Utilise le profil de test avec H2 pour les tests en mémoire
+@ActiveProfiles("test") // Utilise le profil de test
 @ExtendWith(MockitoExtension.class) // Intègre Mockito pour les tests
-public class TransactionServiceTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Empêche le remplacement par H2
+public class TransactionServiceTests {
 
     @Mock
     private TransactionRepository transactionRepository;

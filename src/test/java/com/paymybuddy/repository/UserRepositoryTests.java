@@ -1,11 +1,14 @@
 package com.paymybuddy.repository;
 
 import com.paymybuddy.entity.User;
+
 import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
+import org.springframework.test.annotation.Rollback;
 import org.springframework.test.context.ActiveProfiles;
 
 import java.util.Optional;
@@ -18,12 +21,13 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @ActiveProfiles("test") // Utilise le profil de test avec H2 pour les tests en mémoire
 @DataJpaTest
-public class UserRepositoryTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Empêche le remplacement par H2
+public class UserRepositoryTests {
 
     @Autowired
-    private UserRepository usersRepository;
+    private UserRepository userRepository;
 
-    private static final Logger logger = LoggerFactory.getLogger(UserRepositoryTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(UserRepositoryTests.class);
 
     /**
      * Test pour vérifier qu'un utilisateur est trouvé par son email lorsqu'il existe.
@@ -34,7 +38,7 @@ public class UserRepositoryTest {
         String emailUser = "johndoe@example.com";
 
         // when : recherche de l'utilisateur par email
-        Optional<User> found = usersRepository.findByEmail(emailUser);
+        Optional<User> found = userRepository.findByEmail(emailUser);
 
         // then : vérification que l'utilisateur est trouvé et que les informations sont correctes
         assertThat(found).isPresent();
@@ -50,7 +54,7 @@ public class UserRepositoryTest {
         String email = "not_exist@gmail.com";
 
         // when : recherche d'un utilisateur par cet email
-        Optional<User> found = usersRepository.findByEmail(email);
+        Optional<User> found = userRepository.findByEmail(email);
 
         // then : vérification que l'utilisateur n'est pas trouvé
         assertThat(found).isNotPresent();
@@ -65,7 +69,7 @@ public class UserRepositoryTest {
         Long idUser = 1L; // Assurez-vous que cet ID correspond à un utilisateur existant
 
         // when : recherche de l'utilisateur par son ID
-        Optional<User> found = usersRepository.findById(idUser);
+        Optional<User> found = userRepository.findById(idUser);
 
         // then : vérification que l'utilisateur est trouvé et que les informations sont correctes
         assertThat(found).isPresent();
@@ -81,7 +85,7 @@ public class UserRepositoryTest {
         Long id = 999L;
 
         // when : recherche d'un utilisateur par cet ID
-        Optional<User> found = usersRepository.findById(id);
+        Optional<User> found = userRepository.findById(id);
 
         // then : vérification que l'utilisateur n'est pas trouvé
         assertThat(found).isNotPresent();
@@ -90,6 +94,7 @@ public class UserRepositoryTest {
     /**
      * Test pour vérifier qu'un nouvel utilisateur est trouvé après son enregistrement.
      */
+    @Rollback(false)
     @Test
     public void findById_ShouldReturnUser_WhenNewUser() {
         // given : création d'un nouvel utilisateur
@@ -97,10 +102,10 @@ public class UserRepositoryTest {
         user.setUsername("newUser");
         user.setPassword("passWord****");
         user.setEmail("newuser@exemple.com");
-        usersRepository.save(user); // Sauvegarde du nouvel utilisateur
+        userRepository.save(user); // Sauvegarde du nouvel utilisateur
 
         // when : recherche de cet utilisateur par son ID
-        Optional<User> found = usersRepository.findById(user.getId());
+        Optional<User> found = userRepository.findById(user.getId());
 
         // then : vérification que l'utilisateur est trouvé et que les informations sont correctes
         assertThat(found).isPresent();

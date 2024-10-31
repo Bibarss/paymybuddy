@@ -8,6 +8,7 @@ import org.junit.jupiter.api.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 
@@ -21,7 +22,8 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DataJpaTest
 @ActiveProfiles("test") // Utilise le profil de test avec H2 pour les tests en mémoire
-public class TransactionRepositoryTest {
+@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Empêche le remplacement par H2
+public class TransactionRepositoryTests {
 
     @Autowired
     private TransactionRepository transactionRepository;
@@ -29,10 +31,10 @@ public class TransactionRepositoryTest {
     @Autowired
     private UserRepository usersRepository; // Utilisation du repository Users pour créer des utilisateurs
 
-    private Optional<User> sender;
-    private Optional<User> receiver;
+    private User sender;
+    private User receiver;
 
-    private static final Logger logger = LoggerFactory.getLogger(TransactionRepositoryTest.class);
+    private static final Logger logger = LoggerFactory.getLogger(TransactionRepositoryTests.class);
 
     /**
      * Méthode exécutée avant chaque test pour initialiser les utilisateurs.
@@ -40,8 +42,8 @@ public class TransactionRepositoryTest {
     @BeforeEach
     void setUp() {
         // Recherche des utilisateurs par email
-        sender = usersRepository.findByEmail("sender@example.com");
-        receiver = usersRepository.findByEmail("receiver@example.com");
+        sender = usersRepository.findByEmail("sender@example.com").orElse(null);
+        receiver = usersRepository.findByEmail("receiver@example.com").orElse(null);
     }
 
     /**
@@ -50,7 +52,7 @@ public class TransactionRepositoryTest {
     @Test
     public void findBySender_ShouldReturnTransactions_WhenSenderExists() {
         // when : récupération des transactions envoyées par le sender
-        List<Transaction> transactions = transactionRepository.findBySender(sender.get());
+        List<Transaction> transactions = transactionRepository.findBySender(sender);
 
         // then : vérification que les transactions existent et que les informations sont correctes
         assertThat(transactions).hasSize(2);
@@ -63,7 +65,7 @@ public class TransactionRepositoryTest {
     @Test
     public void findByReceiver_ShouldReturnTransactions_WhenReceiverExists() {
         // when : récupération des transactions reçues par le receiver
-        List<Transaction> transactions = transactionRepository.findByReceiver(receiver.get());
+        List<Transaction> transactions = transactionRepository.findByReceiver(receiver);
 
         // then : vérification que les transactions existent et que les informations sont correctes
         assertThat(transactions).hasSize(2);

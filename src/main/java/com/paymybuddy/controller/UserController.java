@@ -21,13 +21,13 @@ import java.security.Principal;
 @Controller
 public class UserController {
 
-    private final UserService usersService;
+    private final UserService userService;
 
 
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
-    public UserController(UserService usersService) {
-        this.usersService = usersService;
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     /**
@@ -52,7 +52,7 @@ public class UserController {
     @PostMapping("/register")
     public String registerUser(@ModelAttribute("user") User user) {
         logger.info("Enregistrement d'un nouvel utilisateur: {}", user.getEmail());
-        usersService.registerUser(user);
+        userService.registerUser(user);
         return "redirect:/login";
     }
 
@@ -79,7 +79,7 @@ public class UserController {
         String username = principal.getName(); // Récupérer le nom d'utilisateur depuis Principal
         logger.info("Affichage du profil pour l'utilisateur: {}", username);
 
-        User user = usersService.findByEmail(username).orElse(null);
+        User user = userService.findByEmail(username).orElse(null);
         model.addAttribute("user", user);
 
         return "profile"; // Correspond au fichier profile.html
@@ -99,11 +99,11 @@ public class UserController {
         String username = principal.getName();
         logger.info("Mise à jour du mot de passe pour l'utilisateur: {}", username);
 
-        User user = usersService.findByEmail(username).orElse(null);
+        User user = userService.findByEmail(username).orElse(null);
 
         if (user != null) {
             if (newPassword != null && !newPassword.isEmpty()) {
-                usersService.updatePassword(user, newPassword);
+                userService.updatePassword(user, newPassword);
                 logger.info("Mot de passe mis à jour pour l'utilisateur: {}", username);
                 model.addAttribute("success", "Mot de passe mis à jour avec succès.");
             }
@@ -126,7 +126,7 @@ public class UserController {
     @GetMapping("/addConnection")
     public String showAddConnectionForm(Principal principal, Model model) {
         String emailUser = principal.getName();
-        User user = usersService.findByEmail(emailUser).orElse(null);
+        User user = userService.findByEmail(emailUser).orElse(null);
         logger.info("Affichage du formulaire pour ajouter une connexion.");
         model.addAttribute("user", user);
 
@@ -147,12 +147,12 @@ public class UserController {
         String emailUser = principal.getName();
         logger.info("Ajout d'une nouvelle connexion pour l'utilisateur: {}", emailUser);
 
-        User user = usersService.findByEmail(emailUser).orElse(null);
-        User connection = usersService.findByEmail(email).orElse(null);
+        User user = userService.findByEmail(emailUser).orElse(null);
+        User connection = userService.findByEmail(email).orElse(null);
 
         if (user != null && connection != null) {
             if (!user.getConnections().contains(connection)) {
-                usersService.addConnection(user, connection);
+                userService.addConnection(user, connection);
                 logger.info("Connexion ajoutée avec succès pour l'utilisateur: {}", emailUser);
                 model.addAttribute("success", "Relation ajoutée avec succès.");
             } else {

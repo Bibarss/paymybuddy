@@ -1,12 +1,17 @@
 package com.paymybuddy.config;
 
+import com.paymybuddy.service.impl.CustomUserDetailsService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
+import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
 /**
@@ -18,6 +23,8 @@ import org.springframework.security.web.SecurityFilterChain;
 @EnableWebSecurity  // Active la sécurité web de Spring Security.
 @EnableMethodSecurity // Active les annotations @PreAuthorize et similaires
 public class SecurityConfig {
+
+
 
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
@@ -63,5 +70,18 @@ public class SecurityConfig {
         logger.info("Filtre de sécurité configuré avec succès");
         return http.build();
     }
+
+
+    /**
+     * Fournit un encodeur de mots de passe utilisant BCrypt.
+     *
+     * @return Un PasswordEncoder utilisant BCrypt.
+     */
+    @Bean
+    public PasswordEncoder passwordEncoder() {
+        logger.info("Création du bean PasswordEncoder utilisant BCryptPasswordEncoder");
+        return new BCryptPasswordEncoder();
+    }
+
 
 }

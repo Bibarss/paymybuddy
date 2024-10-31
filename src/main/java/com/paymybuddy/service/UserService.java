@@ -27,5 +27,4 @@ public interface UserService {
 
     public boolean isConnection(User user, User connection);
 
-    public UserDetails loadUserByUsername(String email);
 }

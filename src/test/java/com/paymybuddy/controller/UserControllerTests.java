@@ -7,7 +7,9 @@ import com.paymybuddy.service.TransactionService;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.ActiveProfiles;
 import org.springframework.test.web.servlet.MockMvc;
@@ -24,6 +26,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 /**
  * Classe d'intégration pour tester le contrôleur UsersController.
  */
+
 @ActiveProfiles("test") // Utilise le profil de test avec H2 pour les tests en mémoire
 @SpringBootTest
 public class UserControllerTests {
@@ -63,6 +66,7 @@ public class UserControllerTests {
                 .andExpect(status().is3xxRedirection())
                 .andExpect(redirectedUrl("/login"));
     }
+
 
     /**
      * Teste l'ajout d'une nouvelle connexion (succès).
@@ -192,4 +196,5 @@ public class UserControllerTests {
                 .andExpect(model().attributeExists("error")) // Vérifie que l'attribut "error" existe
                 .andExpect(model().attribute("error", "Cette relation existe déjà."));
     }
+
 }

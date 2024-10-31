@@ -27,7 +27,7 @@ import java.util.Optional;
 
 @Data
 @Service
-public class UserServiceImpl implements UserService, UserDetailsService {
+public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
 
@@ -83,25 +83,6 @@ public class UserServiceImpl implements UserService, UserDetailsService {
     @Override
     public Optional<User> loadByUsername(String username) {
         return userRepository.findByUsername(username);
-    }
-
-
-    /**
-     * Charge un utilisateur par son adresse e-mail.
-     *
-     * @param email L'adresse e-mail de l'utilisateur.
-     * @return Les détails de l'utilisateur.
-     * @throws UsernameNotFoundException Si l'utilisateur n'est pas trouvé.
-     */
-    @Override
-    public UserDetails loadUserByUsername(String email) throws UsernameNotFoundException {
-        return userRepository.findByEmail(email)
-                .map(user -> org.springframework.security.core.userdetails.User.builder()
-                        .username(user.getEmail())
-                        .password(user.getPassword())
-                        .authorities(new ArrayList<>()) // Aucune autorité
-                        .build())
-                .orElseThrow(() -> new UsernameNotFoundException("Utilisateur non trouvé"));
     }
 
 
