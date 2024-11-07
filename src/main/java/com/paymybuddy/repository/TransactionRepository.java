@@ -30,4 +30,15 @@ public interface TransactionRepository extends JpaRepository<Transaction, Long> 
      * @return La liste des transactions reçues par l'utilisateur.
      */
     List<Transaction> findByReceiver(User receiver);
+
+    /**
+     * Récupère la liste des transactions reçues par un utilisateur donné.
+     *
+     * @param sender L'utilisateur qui a envoyé les transactions.
+     * @param receiver L'utilisateur qui a reçu les transactions.
+     * @return La liste des transactions envouées et reçues par l'utilisateur.
+     */
+    List<Transaction> findBySenderOrReceiver(User sender, User receiver);
+
+
 }

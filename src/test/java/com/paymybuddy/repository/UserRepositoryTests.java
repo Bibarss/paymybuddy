@@ -21,7 +21,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
  */
 @ActiveProfiles("test") // Utilise le profil de test avec H2 pour les tests en mémoire
 @DataJpaTest
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Empêche le remplacement par H2
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Empêche le remplacement par H2
 public class UserRepositoryTests {
 
     @Autowired
@@ -94,7 +94,7 @@ public class UserRepositoryTests {
     /**
      * Test pour vérifier qu'un nouvel utilisateur est trouvé après son enregistrement.
      */
-    @Rollback(false)
+    //@Rollback(false)
     @Test
     public void findById_ShouldReturnUser_WhenNewUser() {
         // given : création d'un nouvel utilisateur

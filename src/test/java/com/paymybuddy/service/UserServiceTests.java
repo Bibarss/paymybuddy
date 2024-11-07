@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
  */
 @ActiveProfiles("test") // Utilise le profil de test
 @ExtendWith(MockitoExtension.class) // Active Mockito pour les tests
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Empêche le remplacement par H2
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Empêche le remplacement par H2
 public class UserServiceTests {
 
     @Mock

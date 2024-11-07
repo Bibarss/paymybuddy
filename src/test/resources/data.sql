@@ -1,5 +1,5 @@
 
--- tests u
+-- tests u UserRepositoryTests
 
 INSERT INTO users (username, email, password, balance)
 VALUES ('JohnDoe', 'johndoe@example.com', '$2a$10$NkX8xklsR9qU8fsQyMNc2uOjHeOhJClgy9b38siALppKR8RHbpEPq', 100);
@@ -8,7 +8,7 @@ INSERT INTO users (username, email, password, balance)
 VALUES ('TotoTiti', 'tototiti@example.com', '$2a$10$NkX8xklsR9qU8fsQyMNc2uOjHeOhJClgy9b38siALppKR8RHbpEPq', 50);
 
 
--- Tests u TransactionRepositoryTest
+-- Tests u TransactionRepositoryTests
 
 
 INSERT INTO users (username, email, password, balance)

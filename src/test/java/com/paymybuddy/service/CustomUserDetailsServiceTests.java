@@ -26,7 +26,7 @@ import static org.mockito.Mockito.*;
 /**
  * Classe de test unitaire pour UsersService
  */
-@ActiveProfiles("test") // Utilise le profil de test avec H2
+@ActiveProfiles("temvn st") // Utilise le profil de test avec H2
 @ExtendWith(MockitoExtension.class) // Active Mockito pour les tests
 public class CustomUserDetailsServiceTests {
 

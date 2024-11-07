@@ -167,4 +167,24 @@ public class UserController {
         model.addAttribute("user", user);
         return "addConnection";
     }
+
+
+
+    /**
+     * Affiche la page d'ajout de relation.
+     *
+     * @param principal L'utilisateur actuellement connecté.
+     * @param model     Le modèle pour la vue.
+     * @return La page d'ajout de relation.
+     */
+    @GetMapping("/connections")
+    public String showConnectionsForm(Principal principal, Model model) {
+        String emailUser = principal.getName();
+        User user = userService.findByEmail(emailUser).orElse(null);
+        logger.info("Affichage des realtions.");
+        model.addAttribute("user", user);
+
+        return "connections"; // Correspond au fichier addConnection.html
+    }
+
 }

@@ -124,27 +124,27 @@ public class TransactionServiceTests {
     @Test
     public void testFindTransactionsForUser() {
         // given
-        List<Transaction> sentTransactions = new ArrayList<>();
-        sentTransactions.add(transaction);
+        List<Transaction> transactionList = new ArrayList<>();
+        transactionList.add(transaction);
 
-        List<Transaction> receivedTransactions = new ArrayList<>();
+        //List<Transaction> receivedTransactions = new ArrayList<>();
         Transaction receivedTransaction = new Transaction();
         receivedTransaction.setSender(receiver);
         receivedTransaction.setReceiver(sender);
         receivedTransaction.setAmount(50.0);
         receivedTransaction.setDescription("Refund");
-        receivedTransactions.add(receivedTransaction);
+        transactionList.add(receivedTransaction);
 
         // when
-        when(transactionRepository.findBySender(sender)).thenReturn(sentTransactions);
-        when(transactionRepository.findByReceiver(sender)).thenReturn(receivedTransactions);
+
+        when(transactionRepository.findBySenderOrReceiver(receiver, receiver)).thenReturn(transactionList);
 
         // Appel de la méthode
-        List<Transaction> transactions = transactionService.findTransactionsForUser(sender);
+        List<Transaction> transactions = transactionService.findTransactionsForUser(receiver);
 
-        // then
-        assertEquals(1, transactions.size()); // Vérifie que le nombre de transactions est correct
-        verify(transactionRepository, times(1)).findBySender(sender); // Vérifie que les transactions envoyées sont récupérées
-        verify(transactionRepository, times(1)).findByReceiver(sender); // Vérifie que les transactions reçues sont récupérées
+        // then envoy&e 1 et reçu 1
+        assertEquals(2, transactions.size()); // Vérifie que le nombre de transactions est correct
+        verify(transactionRepository, times(1)).findBySenderOrReceiver(receiver, receiver); // Vérifie que les transactions récus sont récupérées
+
     }
 }

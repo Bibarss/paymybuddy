@@ -17,6 +17,7 @@
         <a th:href="@{/profile}">Profil</a>
         <a th:href="@{/addConnection}">Ajouter relation</a>
         <a th:href="@{/logout}">Se déconnecter</a>
+        <a th:href="@{/logout}">Se déconnecter</a>
     </nav>
 </header>
 
@@ -62,6 +63,7 @@
                     <th>Relations</th>
                     <th>Description</th>
                     <th>Montant</th>
+                    <th>Type</th>
                 </tr>
                 </thead>
                 <tbody>
@@ -69,6 +71,9 @@
                     <td th:text="${transaction.receiver.username}"></td>
                     <td th:text="${transaction.description}"></td>
                     <td th:text="${transaction.amount} + ' €'"></td>
+                    <td th:class="${transaction.receiver.username} == ${user.username} ? 'transaction-received' : 'transaction-sent'">
+                        <span th:text="${transaction.receiver.username} == ${user.username} ? 'Reçu' : 'Émis'"></span>
+                    </td>
                 </tr>
                 </tbody>
             </table>

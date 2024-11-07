@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>Liste des relations</title>
+    <link rel="stylesheet" th:href="@{/css/styles.css}">
+</head>
+<body>
+<!-- Navigation -->
+<header>
+    <div>Pay My Buddy</div>
+    <nav>
+        <a th:href="@{/transfer}" class="active">Transférer</a>
+        <a th:href="@{/profile}">Profil</a>
+        <a th:href="@{/addConnection}">Ajouter relation</a>
+        <a th:href="@{/connections}">Relations</a>
+        <a th:href="@{/logout}">Se déconnecter</a>
+    </nav>
+</header>
+
+
+<!-- Affichage des messages -->
+<div th:if="${error}" class="error">
+    <p th:text="${error}"></p>
+</div>
+<div th:if="${success}" class="success">
+    <p th:text="${success}"></p>
+</div>
+
+<!-- Contenu principal -->
+<main>
+    <!-- Formulaire de transfert -->
+    <!-- Section Transférer -->
+    <div id="transferSection">
+        <!-- Liste des transactions -->
+        <div class="transfer-bottom">
+            <table>
+                <thead>
+                <tr>
+                    <th>Relations</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr th:each="connection : : ${user.connections}">
+                    <td th:text="${connection.username}"></td>
+                 </tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+</main>
+</body>
+</html>

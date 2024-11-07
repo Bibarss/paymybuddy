@@ -22,7 +22,7 @@ import static org.assertj.core.api.Assertions.assertThat;
  */
 @DataJpaTest
 @ActiveProfiles("test") // Utilise le profil de test avec H2 pour les tests en mémoire
-@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Empêche le remplacement par H2
+//@AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE) // Empêche le remplacement par H2
 public class TransactionRepositoryTests {
 
     @Autowired
@@ -71,6 +71,21 @@ public class TransactionRepositoryTests {
         assertThat(transactions).hasSize(2);
         assertThat(transactions.get(0).getReceiver().getUsername()).isEqualTo("ReceiverUser");
     }
+
+
+    /**
+     * Test pour vérifier que les transactions envoyées et  eçues par un utilisateur existent.
+     */
+    @Test
+    public void findTransactions_ShouldReturnTransactionExists() {
+        // when : récupération des transactions
+        List<Transaction> transactions = transactionRepository.findBySenderOrReceiver(sender, sender);
+
+        // then : vérification que les transactions existent et que les informations sont correctes
+        assertThat(transactions).hasSize(2);
+        assertThat(transactions.get(0).getSender().getUsername()).isEqualTo("SenderUser");
+    }
+
 
     /**
      * Test pour vérifier qu'un utilisateur sans transactions envoyées retourne une liste vide.

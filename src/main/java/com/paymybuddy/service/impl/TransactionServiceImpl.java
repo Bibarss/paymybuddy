@@ -95,10 +95,17 @@ public class TransactionServiceImpl implements TransactionService {
 
         logger.info("Tentative de récupération des transactions de {}", user.getEmail());
 
-        List<Transaction> sent = transactionRepository.findBySender(user);
-        List<Transaction> received = transactionRepository.findByReceiver(user);
+
+        List<Transaction> transactions = transactionRepository.findBySenderOrReceiver(user, user);
+
+        //List<Transaction> sent = transactionRepository.findBySender(user);
+        //List<Transaction> received = transactionRepository.findByReceiver(user);
         //sent.addAll(received);
-        sent.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate())); // Tri par date décroissante
-        return sent;
+
+        transactions.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate())); // Tri par date décroissante
+        return transactions;
     }
+
+
+
 }

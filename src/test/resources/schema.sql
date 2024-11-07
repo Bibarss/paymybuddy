@@ -1,5 +1,5 @@
-CREATE DATABASE IF NOT EXISTS paymybuddyTest;
-USE paymybuddyTest;
+--CREATE DATABASE IF NOT EXISTS paymybuddyTest;
+--USE paymybuddyTest;
 
 DROP TABLE IF EXISTS transaction;
 DROP TABLE IF EXISTS user_connections;

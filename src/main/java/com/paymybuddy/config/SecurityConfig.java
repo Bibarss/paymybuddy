@@ -10,7 +10,6 @@ import org.springframework.security.config.annotation.authentication.builders.Au
 import org.springframework.security.config.annotation.method.configuration.EnableMethodSecurity;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.annotation.web.configuration.EnableWebSecurity;
-import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 
@@ -25,7 +24,13 @@ import org.springframework.security.web.SecurityFilterChain;
 public class SecurityConfig {
 
 
+    private final CustomUserDetailsService customUserDetailsService;
+    private final PasswordEncoder passwordEncoder;
 
+    public SecurityConfig(CustomUserDetailsService customUserDetailsService, PasswordEncoder passwordEncoder) {
+        this.customUserDetailsService = customUserDetailsService;
+        this.passwordEncoder = passwordEncoder;
+    }
 
     private static final Logger logger = LoggerFactory.getLogger(SecurityConfig.class);
 
@@ -72,16 +77,13 @@ public class SecurityConfig {
     }
 
 
-    /**
-     * Fournit un encodeur de mots de passe utilisant BCrypt.
-     *
-     * @return Un PasswordEncoder utilisant BCrypt.
-     */
-    @Bean
-    public PasswordEncoder passwordEncoder() {
-        logger.info("Création du bean PasswordEncoder utilisant BCryptPasswordEncoder");
-        return new BCryptPasswordEncoder();
-    }
 
+
+    @Bean
+    public AuthenticationManager authenticationManager(HttpSecurity http) throws Exception {
+        AuthenticationManagerBuilder auth = http.getSharedObject(AuthenticationManagerBuilder.class);
+        auth.userDetailsService(customUserDetailsService).passwordEncoder(passwordEncoder);
+        return auth.build();
+    }
 
 }

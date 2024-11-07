@@ -227,13 +227,20 @@ th, td {
 
 /* Messages de succès et d'erreur */
 .success {
-    color: green;
-    margin-top: 10px;
+
+    text-align: right;
+    font-weight: bold;
+    color: #5cb85c; /* Couleur verte pour les messages de succès */
+    margin-right: 20px; /* Ajustez l'espacement si besoin */
+
 }
 
 .error {
-    color: red;
-    margin-top: 10px;
+
+    text-align: right;
+    font-weight: bold;
+    color: #d9534f; /* Couleur rouge pour les erreurs */
+    margin-right: 20px; /* Ajustez l'espacement si besoin */
 }
 
 /* Ajustements pour les erreurs de validation */
@@ -253,4 +260,18 @@ input:invalid {
     justify-content: center;
     align-items: center;
     min-height: 100vh;
+}
+
+/* transactions "Reçu" et "Émis" */
+
+.transaction-received {
+    color: green;
+    font-weight: bold;
+    font-size: 0.9em; /* Ajustez la taille selon vos besoins */
+}
+
+.transaction-sent {
+    color: red;
+    font-weight: bold;
+    font-size: 0.9em; /* Ajustez la taille selon vos besoins */
 }
