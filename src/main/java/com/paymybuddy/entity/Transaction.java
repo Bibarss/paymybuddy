@@ -2,6 +2,8 @@ package com.paymybuddy.entity;
 
 import jakarta.persistence.*;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 /**
@@ -27,7 +29,7 @@ public class Transaction {
     /**
      * Le montant de la transaction.
      */
-    private Double amount;
+    private BigDecimal amount;
 
     /**
      * L'utilisateur qui envoie la transaction.

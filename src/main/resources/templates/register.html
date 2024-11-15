@@ -8,12 +8,35 @@
 <div class="container">
     <div class="form-box">
         <h1 class="title">Pay My Buddy</h1>
+        <!-- Afficher le message d'erreur global s'il existe -->
+        <div th:if="${error}" class="error-message">
+            <p th:text="${error}"></p>
+        </div>
         <form th:action="@{/register}" th:object="${user}" method="post">
-            <input type="text" th:field="*{username}" placeholder="Username" required />
-            <input type="email" th:field="*{email}" placeholder="Mail" required />
-            <input type="password" th:field="*{password}" placeholder="Mot de passe" required />
+            <div class="form-group">
+                <input type="text" th:field="*{username}" placeholder="Nom d'utilisateur" required />
+                <!-- Message d'erreur pour le champ username -->
+                <div th:if="${#fields.hasErrors('username')}" class="field-error">
+                    <p th:errors="*{username}"></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="email" th:field="*{email}" placeholder="Email" required />
+                <!-- Message d'erreur pour le champ email -->
+                <div th:if="${#fields.hasErrors('email')}" class="field-error">
+                    <p th:errors="*{email}"></p>
+                </div>
+            </div>
+            <div class="form-group">
+                <input type="password" th:field="*{password}" placeholder="Mot de passe" required />
+                <!-- Message d'erreur pour le champ password -->
+                <div th:if="${#fields.hasErrors('password')}" class="field-error">
+                    <p th:errors="*{password}"></p>
+                </div>
+            </div>
             <button type="submit">S'inscrire</button>
         </form>
+        <p>Déjà un compte ? <a th:href="@{/login}">Connectez-vous</a></p>
     </div>
 </div>
 </body>

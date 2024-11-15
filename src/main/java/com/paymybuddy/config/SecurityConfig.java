@@ -61,6 +61,7 @@ public class SecurityConfig {
                     form
                             .loginPage("/login")
                             .defaultSuccessUrl("/transfer", true)
+                            .failureUrl("/login?error=true") // Redirige vers /login?error=true en cas d'échec
                             .permitAll();
                 })
                 .logout(logout -> {

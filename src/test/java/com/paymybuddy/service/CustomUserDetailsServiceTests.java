@@ -16,6 +16,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -59,7 +60,7 @@ public class CustomUserDetailsServiceTests {
         user.setUsername("newUser");
         user.setPassword("passWord****");
         user.setEmail("newuser@exemple.com");
-        user.setBalance(100.00);
+        user.setBalance(new BigDecimal("100.0"));
     }
 
     /**

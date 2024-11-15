@@ -1,19 +1,19 @@
 
 -- tests u UserRepositoryTests
-
+--1
 INSERT INTO users (username, email, password, balance)
 VALUES ('JohnDoe', 'johndoe@example.com', '$2a$10$NkX8xklsR9qU8fsQyMNc2uOjHeOhJClgy9b38siALppKR8RHbpEPq', 100);
-
+--2
 INSERT INTO users (username, email, password, balance)
 VALUES ('TotoTiti', 'tototiti@example.com', '$2a$10$NkX8xklsR9qU8fsQyMNc2uOjHeOhJClgy9b38siALppKR8RHbpEPq', 50);
 
 
 -- Tests u TransactionRepositoryTests
 
-
+--3
 INSERT INTO users (username, email, password, balance)
 VALUES ('SenderUser', 'sender@example.com', '$2a$10$NkX8xklsR9qU8fsQyMNc2uOjHeOhJClgy9b38siALppKR8RHbpEPq', 100);
-
+--4
 INSERT INTO users (username, email, password, balance)
 VALUES ('ReceiverUser', 'receiver@example.com', '$2a$10$NkX8xklsR9qU8fsQyMNc2uOjHeOhJClgy9b38siALppKR8RHbpEPq', 50);
 
@@ -28,6 +28,7 @@ VALUES (3, 4, 'Transaction 2', 100,  '2024-10-09 00:00:00');
 
 -- tests d'integration
 -- Insérer des utilisateurs de test
+--5,6,7
 INSERT INTO users (username, email, password, balance) VALUES
 ('User1', 'user1@example.com', '$2a$10$NkX8xklsR9qU8fsQyMNc2uOjHeOhJClgy9b38siALppKR8RHbpEPq', 500.00),
 ('User2', 'user2@example.com', '$2a$10$NkX8xklsR9qU8fsQyMNc2uOjHeOhJClgy9b38siALppKR8RHbpEPq', 300.00),

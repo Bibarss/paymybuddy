@@ -4,6 +4,7 @@ import com.paymybuddy.entity.User;
 import com.paymybuddy.repository.UserRepository;
 import com.paymybuddy.service.UserService;
 import com.paymybuddy.service.TransactionService;
+import jakarta.transaction.Transactional;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -21,6 +22,7 @@ import java.util.Optional;
 
 import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.junit.jupiter.api.Assertions.assertNotNull;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.*;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -31,6 +33,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @ActiveProfiles("test") // Utilise le profil de test avec H2 pour les tests en mémoire
 @SpringBootTest
 @AutoConfigureMockMvc
+@Transactional
 public class UserControllerTests {
 
     @Autowired
@@ -92,11 +95,14 @@ public class UserControllerTests {
     public void testAddConnection_UserNotFound() throws Exception {
         mockMvc.perform(post("/connections/add")
                         .param("email", "nonexistent@example.com")
-                        .principal(() -> "user1@example.com")) // Simule l'utilisateur connecté
-                .andExpect(status().isOk()) // Vérifie un succès 200
-                .andExpect(view().name("addConnection")) // Vérifie que la vue est bien renvoyée
-                .andExpect(model().attributeExists("error")); // Vérifie que l'attribut "error" existe
+                        .principal(() -> "user1@example.com") // Simule l'utilisateur connecté
+                        .with(csrf()))
+                .andExpect(status().isOk())
+                .andExpect(view().name("addConnection"))
+                .andExpect(model().attributeExists("error"))
+                .andExpect(model().attribute("error", "Utilisateur à ajouter non trouvé: nonexistent@example.com"));
     }
+
 
     /**
      * Teste l'affichage du formulaire d'enregistrement.
@@ -197,6 +203,18 @@ public class UserControllerTests {
                 .andExpect(view().name("addConnection")) // Vérifie que la vue "addConnection" est renvoyée
                 .andExpect(model().attributeExists("error")) // Vérifie que l'attribut "error" existe
                 .andExpect(model().attribute("error", "Cette relation existe déjà."));
+    }
+
+    /**
+     * Teste l'affichage du formulaire des relations.
+     */
+    @Test
+    public void testShowConnectionsForm() throws Exception {
+        mockMvc.perform(get("/connections")
+                        .principal(() -> "user1@example.com")) // Simule l'utilisateur connecté
+                .andExpect(status().isOk())
+                .andExpect(view().name("connections"))
+                .andExpect(model().attributeExists("user"));
     }
 
 }

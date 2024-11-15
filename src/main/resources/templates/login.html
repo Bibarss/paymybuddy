@@ -8,9 +8,13 @@
 <div class="container">
     <div class="form-box">
         <h1 class="title">Pay My Buddy</h1>
+        <!-- Afficher le message d'erreur si le paramètre error est présent -->
+        <div th:if="${param.error}" class="error-message">
+            <p>Identifiant ou mot de passe incorrect.</p>
+        </div>
         <form th:action="@{/login}" method="post">
-            <input type="email" name="username" required />
-            <input type="password" name="password" required />
+            <input type="email" name="username" placeholder="Email" required />
+            <input type="password" name="password" placeholder="Mot de passe" required />
             <button type="submit">Se connecter</button>
         </form>
         <!--p>Pas encore inscrit ? <a th:href="@{/register}">S'inscrire</a></p-->

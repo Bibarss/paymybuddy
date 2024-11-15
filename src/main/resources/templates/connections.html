@@ -2,7 +2,7 @@
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
     <meta charset="UTF-8">
-    <title>Liste des relations</title>
+    <title>Liste des Relations</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
 </head>
 <body>
@@ -18,7 +18,6 @@
     </nav>
 </header>
 
-
 <!-- Affichage des messages -->
 <div th:if="${error}" class="error">
     <p th:text="${error}"></p>
@@ -29,25 +28,23 @@
 
 <!-- Contenu principal -->
 <main>
-    <!-- Formulaire de transfert -->
-    <!-- Section Transférer -->
-    <div id="transferSection">
-        <!-- Liste des transactions -->
-        <div class="transfer-bottom">
-            <table>
-                <thead>
-                <tr>
-                    <th>Relations</th>
-                </tr>
-                </thead>
-                <tbody>
-                <tr th:each="connection : : ${user.connections}">
-                    <td th:text="${connection.username}"></td>
-                 </tr>
-                </tbody>
-            </table>
-        </div>
-    </div>
+    <section class="connections-section">
+        <h2>Mes Relations</h2>
+        <table class="connections-table">
+            <thead>
+            <tr>
+                <th>Nom d'utilisateur</th>
+                <th>Email</th>
+            </tr>
+            </thead>
+            <tbody>
+            <tr th:each="connection : ${user.connections}">
+                <td th:text="${connection.username}" data-label="Nom d'utilisateur"></td>
+                <td th:text="${connection.email}" data-label="Email"></td>
+            </tr>
+            </tbody>
+        </table>
+    </section>
 </main>
 </body>
 </html>

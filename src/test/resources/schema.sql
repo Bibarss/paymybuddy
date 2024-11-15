@@ -10,7 +10,7 @@ CREATE TABLE users (
     username VARCHAR(255) NOT NULL,
     email VARCHAR(255) NOT NULL UNIQUE,
     password VARCHAR(255) NOT NULL,
-    balance DOUBLE NOT NULL DEFAULT 0.0
+    balance DECIMAL(19, 2) NOT NULL DEFAULT 0.0
 );
 
 CREATE TABLE user_connections (
@@ -26,7 +26,7 @@ CREATE TABLE transaction (
     sender_id INT NOT NULL,
     receiver_id INT NOT NULL,
     description VARCHAR(255),
-    amount DOUBLE NOT NULL,
+    amount DECIMAL(19, 2) NOT NULL,
     date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
     CONSTRAINT fk_sender FOREIGN KEY (sender_id) REFERENCES users(id),
     CONSTRAINT fk_receiver FOREIGN KEY (receiver_id) REFERENCES users(id)

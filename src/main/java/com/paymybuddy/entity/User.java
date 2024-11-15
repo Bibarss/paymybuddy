@@ -1,7 +1,12 @@
 package com.paymybuddy.entity;
 
 import jakarta.persistence.*;
+import jakarta.validation.constraints.Email;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.Size;
 import lombok.Data;
+
+import java.math.BigDecimal;
 import java.util.*;
 
 /**
@@ -22,12 +27,15 @@ public class User {
     /**
      * Le nom d'utilisateur.
      */
+    @NotBlank(message = "Le nom d'utilisateur est obligatoire.")
     @Column(nullable = false)
     private String username;
 
     /**
      * L'adresse e-mail de l'utilisateur. Doit être unique.
      */
+    @NotBlank(message = "L'email est obligatoire.")
+    @Email(message = "L'email doit être valide.")
     @Column(nullable = false, unique = true)
     private String email;
 
@@ -35,13 +43,14 @@ public class User {
      * Le mot de passe de l'utilisateur.
      */
     @Column(nullable = false)
+    @NotBlank(message = "Le mot de passe est obligatoire.")
+    @Size(min = 3, message = "Le mot de passe doit contenir au moins 3 caractères.")
     private String password;
-
     /**
      * Le solde du compte de l'utilisateur.
      */
     @Column(nullable = false)
-    private Double balance = 0.0;
+    private BigDecimal balance = BigDecimal.ZERO;
 
     /**
      * Liste des transactions envoyées par l'utilisateur.

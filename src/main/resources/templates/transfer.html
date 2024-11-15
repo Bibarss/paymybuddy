@@ -4,9 +4,6 @@
     <meta charset="UTF-8">
     <title>Transférer de l'argent</title>
     <link rel="stylesheet" th:href="@{/css/styles.css}">
-    <style>
-        /* Incluez ici vos styles CSS existants */
-    </style>
 </head>
 <body>
 <!-- Navigation -->
@@ -16,15 +13,14 @@
         <a th:href="@{/transfer}" class="active">Transférer</a>
         <a th:href="@{/profile}">Profil</a>
         <a th:href="@{/addConnection}">Ajouter relation</a>
-        <a th:href="@{/logout}">Se déconnecter</a>
+        <a th:href="@{/connections}">Relations</a>
         <a th:href="@{/logout}">Se déconnecter</a>
     </nav>
 </header>
 
-
 <!-- Affichage du solde -->
-<div class="balance">
-    <p>Solde : <span th:text="${user.balance} + ' €'">0 €</span></p>
+<div class="balance" th:if="${user != null}">
+    <p>Solde : <span th:text="${formattedBalance}"></span> €</p>
 </div>
 
 <!-- Affichage des messages -->
@@ -38,11 +34,11 @@
 <!-- Contenu principal -->
 <main>
     <!-- Formulaire de transfert -->
-    <!-- Section Transférer -->
     <div id="transferSection">
         <div class="transfer-top">
             <form th:action="@{/transactions/send}" method="post" class="transfer-form">
-                <select name="connectionEmail" required>
+                <!-- Protection CSRF supprimée car désactivée -->
+                <select name="connectionEmail" class="wide-select" required>
                     <option value="" disabled selected>Sélectionner une relation</option>
                     <option th:each="connection : ${user.connections}"
                             th:value="${connection.email}"
@@ -50,7 +46,7 @@
                     </option>
                 </select>
                 <input type="text" name="description" placeholder="Description">
-                <input type="number" name="amount" min="0" step="1" placeholder="0 €" required>
+                <input type="number" name="amount" min="0" step="0.01" placeholder="0,00 €" required>
                 <button type="submit">Payer</button>
             </form>
         </div>
@@ -67,12 +63,12 @@
                 </tr>
                 </thead>
                 <tbody>
-                <tr th:each="transaction : ${transactions}">
-                    <td th:text="${transaction.receiver.username}"></td>
-                    <td th:text="${transaction.description}"></td>
-                    <td th:text="${transaction.amount} + ' €'"></td>
-                    <td th:class="${transaction.receiver.username} == ${user.username} ? 'transaction-received' : 'transaction-sent'">
-                        <span th:text="${transaction.receiver.username} == ${user.username} ? 'Reçu' : 'Émis'"></span>
+                <tr th:each="transMap : ${transactions}">
+                    <td th:text="${transMap.transaction.receiver.username}"></td>
+                    <td th:text="${transMap.transaction.description}"></td>
+                    <td th:text="${transMap.formattedAmount + ' €'}"></td>
+                    <td th:class="(${transMap.transaction.receiver.id} == ${user.id}) ? 'transaction-received' : 'transaction-sent'">
+                        <span th:text="(${transMap.transaction.receiver.id} == ${user.id}) ? 'Reçu' : 'Émis'"></span>
                     </td>
                 </tr>
                 </tbody>

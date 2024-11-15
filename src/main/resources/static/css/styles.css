@@ -153,6 +153,7 @@ main {
     display: flex;
     justify-content: space-between;
     gap: 20px;
+    flex-wrap: wrap; /* Permet au formulaire de s'adapter sur plusieurs lignes si nécessaire */
 }
 
 .transfer-form input,
@@ -227,16 +228,13 @@ th, td {
 
 /* Messages de succès et d'erreur */
 .success {
-
     text-align: right;
     font-weight: bold;
     color: #5cb85c; /* Couleur verte pour les messages de succès */
     margin-right: 20px; /* Ajustez l'espacement si besoin */
-
 }
 
 .error {
-
     text-align: right;
     font-weight: bold;
     color: #d9534f; /* Couleur rouge pour les erreurs */
@@ -263,7 +261,6 @@ input:invalid {
 }
 
 /* transactions "Reçu" et "Émis" */
-
 .transaction-received {
     color: green;
     font-weight: bold;
@@ -274,4 +271,95 @@ input:invalid {
     color: red;
     font-weight: bold;
     font-size: 0.9em; /* Ajustez la taille selon vos besoins */
+}
+
+/* Styles spécifiques pour le champ select élargi dans le formulaire de transfert */
+.transfer-form select.wide-select {
+    max-width: 300px; /* Ajustez cette valeur selon vos besoins */
+    width: 100%; /* Assure que le select prend toute la largeur disponible dans son conteneur */
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    font-size: 16px;
+    flex: 2; /* Permet au select de prendre plus de place dans le conteneur flex */
+}
+
+/* Ajustez les autres éléments du formulaire pour laisser plus de place au select */
+.transfer-form input[type="text"],
+.transfer-form input[type="number"],
+.transfer-form button {
+    flex: 1; /* Limite la largeur des autres éléments */
+    max-width: 150px; /* Ajustez cette valeur si nécessaire */
+}
+
+/* Styles spécifiques pour le tableau des relations */
+.connections-table {
+    width: 100%;
+    border-collapse: separate; /* Permet l'utilisation de border-radius */
+    border-spacing: 0;
+    border-radius: 10px; /* Coins arrondis */
+    overflow: hidden; /* Pour que les coins arrondis s'appliquent correctement */
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Ombre légère pour un effet de profondeur */
+    background-color: #ffffff; /* Fond blanc pour le tableau */
+    margin-top: 20px;
+}
+
+.connections-table thead {
+    background-color: #007bff; /* Bleu */
+    color: white;
+}
+
+.connections-table th, .connections-table td {
+    padding: 12px 15px;
+    border: 1px solid #ddd;
+    text-align: left;
+}
+
+.connections-table th {
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+}
+
+.connections-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
+}
+
+.connections-table tbody tr:hover {
+    background-color: #e9ecef;
+}
+
+/* Responsivité du tableau */
+@media (max-width: 768px) {
+    .connections-table, .connections-table thead, .connections-table tbody, .connections-table th, .connections-table td, .connections-table tr {
+        display: block;
+    }
+
+    .connections-table thead tr {
+        position: absolute;
+        top: -9999px;
+        left: -9999px;
+    }
+
+    .connections-table tr {
+        margin-bottom: 15px;
+    }
+
+    .connections-table td {
+        border: none;
+        position: relative;
+        padding-left: 50%;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .connections-table td::before {
+        content: attr(data-label);
+        position: absolute;
+        left: 15px;
+        width: 45%;
+        padding-right: 10px;
+        white-space: nowrap;
+        font-weight: bold;
+    }
 }

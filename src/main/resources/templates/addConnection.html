@@ -16,7 +16,7 @@
         <a th:href="@{/transfer}">Transférer</a>
         <a th:href="@{/profile}">Profil</a>
         <a th:href="@{/addConnection}" class="active">Ajouter relation</a>
-        <a th:href="@{/logout}">Se déconnecter</a>
+        <a th:href="@{/connections}">Relations</a>
         <a th:href="@{/logout}">Se déconnecter</a>
     </nav>
 </header>
@@ -38,11 +38,6 @@
             <button type="submit">Ajouter</button>
         </form>
 
-        <!-- Liste des connexions -->
-        <h5>Vos relations</h5>
-        <ul>
-            <li th:each="connection : ${user.connections}" th:text="${connection.username}"></li>
-        </ul>
     </div>
 </main>
 </body>

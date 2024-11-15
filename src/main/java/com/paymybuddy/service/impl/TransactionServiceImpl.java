@@ -2,6 +2,8 @@ package com.paymybuddy.service.impl;
 
 import com.paymybuddy.entity.Transaction;
 import com.paymybuddy.entity.User;
+import com.paymybuddy.exception.InsufficientBalanceException;
+import com.paymybuddy.exception.TransactionException;
 import com.paymybuddy.repository.TransactionRepository;
 import com.paymybuddy.repository.UserRepository;
 import com.paymybuddy.service.TransactionService;
@@ -12,31 +14,31 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.util.List;
 
-
-
 /**
- * Service pour gérer les transactions.
+ * Implémentation du service pour gérer les transactions.
  */
 @Service
 public class TransactionServiceImpl implements TransactionService {
 
-
-
-
     private final TransactionRepository transactionRepository;
 
-
-    private final  UserRepository usersRepository;
+    private final UserRepository userRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(TransactionServiceImpl.class);
 
-    public TransactionServiceImpl(TransactionRepository transactionRepository, UserRepository usersRepository) {
+    /**
+     * Constructeur avec injection des dépendances.
+     *
+     * @param transactionRepository Le dépôt des transactions.
+     * @param userRepository        Le dépôt des utilisateurs.
+     */
+    public TransactionServiceImpl(TransactionRepository transactionRepository, UserRepository userRepository) {
         this.transactionRepository = transactionRepository;
-        this.usersRepository = usersRepository;
+        this.userRepository = userRepository;
     }
-
 
     /**
      * Effectue un transfert d'argent entre deux utilisateurs.
@@ -46,25 +48,25 @@ public class TransactionServiceImpl implements TransactionService {
      * @param amount      Le montant à transférer.
      * @param description La description de la transaction.
      * @return La transaction créée.
-     * @throws Exception Si le solde du sender est insuffisant.
+     * @throws InsufficientBalanceException Si le solde du sender est insuffisant.
      */
     @Transactional
     @Override
-    public Transaction sendMoney(User sender, User receiver, Double amount, String description) throws Exception {
+    public Transaction sendMoney(User sender, User receiver, BigDecimal amount, String description) throws TransactionException {
 
         logger.info("Tentative de transfert d'argent de {} à {} : montant = {}", sender.getEmail(), receiver.getEmail(), amount);
 
-        // Vérifier le solde, appliquer les frais, gérer les exceptions
 
-        // Vérifier que le sender a suffisamment de fonds
-        double fee = amount * 0; // 0% de frais
-        double totalAmount = amount + fee;
+        // Vérifier que le montant est positif
+        if (amount.compareTo(BigDecimal.ZERO) <= 0) {
+            throw new IllegalArgumentException("Le montant doit être supérieur à zéro.");
+        }
 
-        if (sender.getBalance() >= totalAmount) {
+        if (sender.getBalance().compareTo(amount) >= 0) {
             // Débiter le compte de l'expéditeur
-            sender.setBalance(sender.getBalance() - totalAmount);
+            sender.setBalance(sender.getBalance().subtract(amount));
             // Créditer le compte du destinataire
-            receiver.setBalance(receiver.getBalance() + amount);
+            receiver.setBalance(receiver.getBalance().add(amount));
 
             // Créer la transaction
             Transaction transaction = new Transaction();
@@ -73,13 +75,15 @@ public class TransactionServiceImpl implements TransactionService {
             transaction.setAmount(amount);
             transaction.setDescription(description);
 
+
             // Enregistrer les modifications
-            usersRepository.save(sender);
-            usersRepository.save(receiver);
+            userRepository.save(sender);
+            userRepository.save(receiver);
+            logger.info("Transaction réussie de {} à {}", sender.getEmail(), receiver.getEmail());
             return transactionRepository.save(transaction);
         } else {
             logger.error("Solde insuffisant pour l'utilisateur: {}", sender.getEmail());
-            throw new Exception("Solde insuffisant pour effectuer la transaction.");
+            throw new InsufficientBalanceException("Solde insuffisant pour effectuer la transaction.");
         }
     }
 
@@ -89,23 +93,14 @@ public class TransactionServiceImpl implements TransactionService {
      * @param user L'utilisateur pour lequel récupérer les transactions.
      * @return La liste des transactions de l'utilisateur.
      */
-
     @Override
     public List<Transaction> findTransactionsForUser(User user) {
 
-        logger.info("Tentative de récupération des transactions de {}", user.getEmail());
-
+        logger.info("Récupération des transactions pour l'utilisateur: {}", user.getEmail());
 
         List<Transaction> transactions = transactionRepository.findBySenderOrReceiver(user, user);
-
-        //List<Transaction> sent = transactionRepository.findBySender(user);
-        //List<Transaction> received = transactionRepository.findByReceiver(user);
-        //sent.addAll(received);
 
         transactions.sort((t1, t2) -> t2.getDate().compareTo(t1.getDate())); // Tri par date décroissante
         return transactions;
     }
-
-
-
 }

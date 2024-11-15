@@ -1,31 +1,35 @@
 package com.paymybuddy.controller;
 
 import com.paymybuddy.entity.User;
+import com.paymybuddy.exception.UserNotFoundException;
 import com.paymybuddy.service.UserService;
 
+import jakarta.validation.Valid;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
+import org.springframework.validation.BindingResult;
 import org.springframework.web.bind.annotation.*;
 
 import java.security.Principal;
 
 /**
  * Contrôleur pour gérer les opérations liées à l'utilisateur :
- * Créer un compte,
- * login,
- * Update du profil,
- * ajout de relations (connexion)
+ * création de compte, login, mise à jour du profil, ajout de connexions.
  */
 @Controller
 public class UserController {
 
     private final UserService userService;
 
-
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
 
+    /**
+     * Constructeur avec injection du service utilisateur.
+     *
+     * @param userService Le service utilisateur.
+     */
     public UserController(UserService userService) {
         this.userService = userService;
     }
@@ -34,7 +38,7 @@ public class UserController {
      * Affiche la page d'inscription.
      *
      * @param model Le modèle pour la vue.
-     * @return La page d'inscription.
+     * @return Le nom de la vue pour l'inscription.
      */
     @GetMapping("/register")
     public String showRegistrationForm(Model model) {
@@ -50,20 +54,36 @@ public class UserController {
      * @return Redirige vers la page de connexion.
      */
     @PostMapping("/register")
-    public String registerUser(@ModelAttribute("user") User user) {
-        logger.info("Enregistrement d'un nouvel utilisateur: {}", user.getEmail());
+    public String registerUser(@Valid @ModelAttribute("user") User user, BindingResult result, Model model) {
+        logger.info("Tentative d'enregistrement d'un nouvel utilisateur: {}", user.getEmail());
+
+        // Vérifier les erreurs de validation
+        if (result.hasErrors()) {
+            logger.warn("Erreurs de validation lors de l'inscription: {}", result.getAllErrors());
+            return "register";
+        }
+
+        // Vérifier si l'email est déjà utilisé
+        if (userService.findByEmail(user.getEmail()).isPresent()) {
+            logger.warn("L'email {} est déjà utilisé.", user.getEmail());
+            model.addAttribute("error", "Cet email est déjà utilisé.");
+            return "register";
+        }
+
         userService.registerUser(user);
+        logger.info("Utilisateur enregistré avec succès: {}", user.getEmail());
         return "redirect:/login";
     }
 
+
     /**
-     * Affiche la page de login.
+     * Affiche la page de connexion.
      *
-     * @return La page de login.
+     * @return Le nom de la vue pour la connexion.
      */
     @GetMapping("/login")
     public String showLoginForm() {
-        logger.info("Affichage du formulaire de login.");
+        logger.info("Affichage du formulaire de connexion.");
         return "login";
     }
 
@@ -72,17 +92,18 @@ public class UserController {
      *
      * @param principal L'objet Principal représentant l'utilisateur actuellement connecté.
      * @param model     Le modèle pour la vue.
-     * @return La page de profil.
+     * @return Le nom de la vue pour le profil.
      */
     @GetMapping("/profile")
     public String showProfilePage(Principal principal, Model model) {
         String username = principal.getName(); // Récupérer le nom d'utilisateur depuis Principal
         logger.info("Affichage du profil pour l'utilisateur: {}", username);
 
-        User user = userService.findByEmail(username).orElse(null);
-        model.addAttribute("user", user);
+        User user = userService.findByEmail(username)
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé: " + username));
 
-        return "profile"; // Correspond au fichier profile.html
+        model.addAttribute("user", user);
+        return "profile";
     }
 
     /**
@@ -91,7 +112,7 @@ public class UserController {
      * @param principal   L'utilisateur actuellement connecté.
      * @param newPassword Le nouveau mot de passe, s'il est fourni.
      * @param model       Le modèle pour la vue.
-     * @return Redirige vers la page du profil.
+     * @return Le nom de la vue pour le profil.
      */
     @PostMapping("/profile/update")
     public String updateProfile(Principal principal, @RequestParam(value = "newPassword", required = false) String newPassword, Model model) {
@@ -99,17 +120,13 @@ public class UserController {
         String username = principal.getName();
         logger.info("Mise à jour du mot de passe pour l'utilisateur: {}", username);
 
-        User user = userService.findByEmail(username).orElse(null);
+        User user = userService.findByEmail(username)
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé: " + username));
 
-        if (user != null) {
-            if (newPassword != null && !newPassword.isEmpty()) {
-                userService.updatePassword(user, newPassword);
-                logger.info("Mot de passe mis à jour pour l'utilisateur: {}", username);
-                model.addAttribute("success", "Mot de passe mis à jour avec succès.");
-            }
-        } else {
-            logger.error("Utilisateur non trouvé pour la mise à jour du profil.");
-            model.addAttribute("error", "Utilisateur non trouvé.");
+        if (newPassword != null && !newPassword.isEmpty()) {
+            userService.updatePassword(user, newPassword);
+            logger.info("Mot de passe mis à jour pour l'utilisateur: {}", username);
+            model.addAttribute("success", "Mot de passe mis à jour avec succès.");
         }
 
         model.addAttribute("user", user);
@@ -117,20 +134,21 @@ public class UserController {
     }
 
     /**
-     * Affiche la page d'ajout de relation.
+     * Affiche la page d'ajout de connexion.
      *
      * @param principal L'utilisateur actuellement connecté.
      * @param model     Le modèle pour la vue.
-     * @return La page d'ajout de relation.
+     * @return Le nom de la vue pour l'ajout de connexion.
      */
     @GetMapping("/addConnection")
     public String showAddConnectionForm(Principal principal, Model model) {
         String emailUser = principal.getName();
-        User user = userService.findByEmail(emailUser).orElse(null);
+        User user = userService.findByEmail(emailUser)
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé: " + emailUser));
         logger.info("Affichage du formulaire pour ajouter une connexion.");
         model.addAttribute("user", user);
 
-        return "addConnection"; // Correspond au fichier addConnection.html
+        return "addConnection";
     }
 
     /**
@@ -139,7 +157,7 @@ public class UserController {
      * @param principal L'utilisateur actuellement connecté.
      * @param email     L'adresse e-mail de l'utilisateur à ajouter.
      * @param model     Le modèle pour la vue.
-     * @return Redirige vers la page d'ajout de relations.
+     * @return Le nom de la vue pour l'ajout de connexion.
      */
     @PostMapping("/connections/add")
     public String addConnection(Principal principal, @RequestParam("email") String email, Model model) {
@@ -147,10 +165,12 @@ public class UserController {
         String emailUser = principal.getName();
         logger.info("Ajout d'une nouvelle connexion pour l'utilisateur: {}", emailUser);
 
-        User user = userService.findByEmail(emailUser).orElse(null);
-        User connection = userService.findByEmail(email).orElse(null);
+        try {
+            User user = userService.findByEmail(emailUser)
+                    .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé: " + emailUser));
+            User connection = userService.findByEmail(email)
+                    .orElseThrow(() -> new UserNotFoundException("Utilisateur à ajouter non trouvé: " + email));
 
-        if (user != null && connection != null) {
             if (!user.getConnections().contains(connection)) {
                 userService.addConnection(user, connection);
                 logger.info("Connexion ajoutée avec succès pour l'utilisateur: {}", emailUser);
@@ -159,32 +179,32 @@ public class UserController {
                 logger.warn("La relation existe déjà pour l'utilisateur: {}", emailUser);
                 model.addAttribute("error", "Cette relation existe déjà.");
             }
-        } else {
-            logger.warn("Impossible de trouver l'utilisateur ou la connexion: {}", email);
-            model.addAttribute("error", "Utilisateur non trouvé.");
-        }
 
-        model.addAttribute("user", user);
-        return "addConnection";
+            model.addAttribute("user", user);
+            return "addConnection";
+
+        } catch (UserNotFoundException ex) {
+            logger.warn("Erreur lors de l'ajout de connexion: {}", ex.getMessage());
+            model.addAttribute("error", ex.getMessage());
+            return "addConnection";
+        }
     }
 
-
-
     /**
-     * Affiche la page d'ajout de relation.
+     * Affiche la liste des connexions de l'utilisateur.
      *
      * @param principal L'utilisateur actuellement connecté.
      * @param model     Le modèle pour la vue.
-     * @return La page d'ajout de relation.
+     * @return Le nom de la vue pour les connexions.
      */
     @GetMapping("/connections")
     public String showConnectionsForm(Principal principal, Model model) {
         String emailUser = principal.getName();
-        User user = userService.findByEmail(emailUser).orElse(null);
-        logger.info("Affichage des realtions.");
+        User user = userService.findByEmail(emailUser)
+                .orElseThrow(() -> new UserNotFoundException("Utilisateur non trouvé: " + emailUser));
+        logger.info("Affichage des relations.");
         model.addAttribute("user", user);
 
-        return "connections"; // Correspond au fichier addConnection.html
+        return "connections";
     }
-
 }

@@ -13,6 +13,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabase;
 import org.springframework.test.context.ActiveProfiles;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -54,17 +55,17 @@ public class TransactionServiceTests {
         sender = new User();
         sender.setId(1L);
         sender.setEmail("sender@example.com");
-        sender.setBalance(1000.0);
+        sender.setBalance(new BigDecimal("1000.0"));
 
         receiver = new User();
         receiver.setId(2L);
         receiver.setEmail("receiver@example.com");
-        receiver.setBalance(500.0);
+        receiver.setBalance(new BigDecimal("500.0"));
 
         transaction = new Transaction();
         transaction.setSender(sender);
         transaction.setReceiver(receiver);
-        transaction.setAmount(100.0);
+        transaction.setAmount(new BigDecimal("100.0"));
         transaction.setDescription("Payment");
     }
 
@@ -74,10 +75,10 @@ public class TransactionServiceTests {
     @Test
     public void testSendMoney_SuccessfulTransaction() throws Exception {
         // given
-        double amount = 100.0;
+
+        BigDecimal amount = new BigDecimal("100.0");
+
         String description = "Payment";
-        double fee = amount * 0; // Calcul des frais de transaction
-        double totalAmount = amount + fee; // Montant total déduit du solde
 
         // when
         when(transactionRepository.save(any(Transaction.class))).thenReturn(transaction);
@@ -95,8 +96,8 @@ public class TransactionServiceTests {
         verify(transactionRepository, times(1)).save(any(Transaction.class)); // Vérifie que la transaction a été sauvegardée
 
         // Vérification des soldes après la transaction
-        assertEquals(1000.0 - totalAmount, sender.getBalance());
-        assertEquals(500.0 + amount, receiver.getBalance());
+        assertEquals(new BigDecimal("900.0"), sender.getBalance());  // 1000.0 - 100.0
+        assertEquals(new BigDecimal("600.0"), receiver.getBalance()); // 500.0 + 100.0
     }
 
     /**
@@ -105,11 +106,11 @@ public class TransactionServiceTests {
     @Test
     public void testSendMoney_InsufficientBalance() {
         // given
-        sender.setBalance(50.0); // Solde insuffisant pour couvrir le montant et les frais
+        sender.setBalance(new BigDecimal("50.0")); // Solde insuffisant pour couvrir le montant et les frais
 
         // when & then
         Exception exception = assertThrows(Exception.class, () -> {
-            transactionService.sendMoney(sender, receiver, 100.0, "Payment");
+            transactionService.sendMoney(sender, receiver, new BigDecimal("100.0"), "Payment");
         });
 
         assertEquals("Solde insuffisant pour effectuer la transaction.", exception.getMessage());
@@ -131,7 +132,7 @@ public class TransactionServiceTests {
         Transaction receivedTransaction = new Transaction();
         receivedTransaction.setSender(receiver);
         receivedTransaction.setReceiver(sender);
-        receivedTransaction.setAmount(50.0);
+        receivedTransaction.setAmount(new BigDecimal("50.0"));
         receivedTransaction.setDescription("Refund");
         transactionList.add(receivedTransaction);
 
